@@ -22,22 +22,27 @@ controlKey = Keys.CONTROL
 base_url = "http://www.bing.com/search?q="
 
 if platform.system() == "Windows":
-    ffdirect = os.getenv('APPDATA')+"\\Mozilla\\Firefox\\Profiles\\"
-    ffdirect = (ffdirect + os.listdir(ffdirect)[0]).replace("\\","/")
-    chromedirect = os.getenv('LOCALAPPDATA')+"\\Google\\Chrome\\User Data\\"
-    chromedirect = chromedirect.replace("\\","/")
+    ffdirect = os.path.join(os.getenv('APPDATA') , "Mozilla\\Firefox\\Profiles\\")
+    ffdirect = os.path.join(ffdirect, os.listdir(ffdirect)[0]).replace("\\","/")
+    chromedirect = os.path.join(os.getenv('LOCALAPPDATA'),"Google\\Chrome\\User Data\\").replace("\\","/")
     controlKey = Keys.CONTROL
-elif platform.system() == "MAC":
+elif platform.system() == "Darwin":
+#Mac
     controlKey = Keys.COMMAND
+    chromedirect = os.path.join(os.environ['HOME'], "Library/Application Support/Google/Chrome/Default/")
+    ffdirect = os.path.join(os.environ['HOME'], "Library/Application Support/Firefox/Profiles/")
+    ffdirect = os.path.join(ffdirect + os.listdir(ffdirect)[0])
     
     
 Edge = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0"
 SafariMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/47.0.2526.70 Mobile/13C71 Safari/601.1.46"
 
-scriptsDir = os.path.dirname(sys.executable) + "\\Scripts\\"
-if "chromedriver.exe" not in os.listdir(scriptsDir):
-        print ("Need to install chromedriver to directory \"%s\"\n" % (scriptsDir))
-        exit(0)
+if platform.system() == "Windows":
+    scriptsDir = os.path.join(os.path.dirname(sys.executable) , "Scripts")
+    if "chromedriver.exe" not in os.listdir(scriptsDir):
+            print ("Need to install chromedriver to directory \"%s\"\n" % (scriptsDir))
+            exit(0)
+if platform.system() == "Darwin":
 
 searches = ["BALTIMORE RAVENS",
 "BALTIMORE ORIOLES",
