@@ -93,16 +93,4 @@ class ChromeWebDriver:
     def closeMobileDriver(self):
         self.chromeMobileDriver.quit()     
 
-"""
-# if platform.system() == "Windows":
-#     scriptsDir = os.path.join(os.path.dirname(sys.executable) , "Scripts")
-#     if "chromedriver.exe" not in os.listdir(scriptsDir):
-#             print ("Need to install chromedriver to directory \"%s\"\n" % (scriptsDir))
-#             exit(0)
-# if platform.system() == "Darwin":
-#     print("COME BACK HERE")
-"""
-
-
-        
         
