@@ -32,7 +32,7 @@ if __name__ == '__main__':
     checkDependencies()
     
     DesktopSearches = 35
-    MoileSearches = 25
+    MobileSearches = 25
     
     searchesList = Searches().getSearchesList()
 
@@ -54,13 +54,12 @@ if __name__ == '__main__':
     firefox.startMobileDriver()
     chrome.startMobileDriver()
     
-    for index in (random.sample(range(len(searchesList)), MoileSearches)):
+    for index in (random.sample(range(len(searchesList)), MobileSearches)):
     
         firefox.getMobileUrl(base_url + searchesList[index])
         chrome.getMobileUrl(base_url + searchesList[index])
         sleep(random.uniform(1.0,3.25))
 
-    
     firefox.closeMobileDriver()    
     chrome.closeMobileDriver()
     
