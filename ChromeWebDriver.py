@@ -6,6 +6,8 @@ import os
 import sys
 import zipfile
 import io
+import stat
+
     
 class ChromeWebDriver:
     SUCCESS = 0
@@ -31,7 +33,7 @@ class ChromeWebDriver:
             self.chromedirect = os.path.join(os.getenv('HOME'), \
                 "Library/Application Support/Google/Chrome/Default/")
             self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
-            self.driverUrl = ChromeWebDriver.winDriver
+            self.driverUrl = ChromeWebDriver.macDriver
         
         if self.checkForChromeDriver() == ChromeWebDriver.FAILURE:
             self.getChromeDriver()
@@ -60,6 +62,12 @@ class ChromeWebDriver:
             zip_ref = zipfile.ZipFile(io.BytesIO(zipDriver))
             zip_ref.extractall(self.downloadsDir)
             zip_ref.close() 
+        
+        for file in os.listdir(self.downloadsDir):
+            if ((file.startswith("chromedriver")) and (not file.endswith(".zip"))):
+                filePath = os.path.join(self.downloadsDir, file)
+                st = os.stat(filePath)
+                os.chmod(filePath, st.st_mode | stat.S_IEXEC)
 
     def startDesktopDriver(self):
         chrome_desktop_opts = Options()

@@ -1,9 +1,13 @@
-from FirefoxWebDriver import FirefoxWebDriver
-from ChromeWebDriver import ChromeWebDriver
-from Searches import Searches
 import random
 from time import sleep
 import sys
+
+try:
+    from FirefoxWebDriver import FirefoxWebDriver
+    from ChromeWebDriver import ChromeWebDriver
+    from Searches import Searches   
+except:
+    checkDependencies()
 
 Edge = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0"
 SafariMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/47.0.2526.70 Mobile/13C71 Safari/601.1.46"
@@ -19,6 +23,7 @@ def checkDependencies():
         try:
             pip.main(['install', '-U', 'selenium'])
         except:
+            print ("NEED TO INSTALL SELENIUM")
             sys.stderr.write("ERROR: Need to install selenium")
             
     if "feedparser" not in flat_installed_packages:
@@ -27,10 +32,9 @@ def checkDependencies():
         except:
             sys.stderr.write("ERROR: Need to install feedparser")
             
+     
 if __name__ == '__main__':
-    
-    checkDependencies()
-    
+
     DesktopSearches = 35
     MobileSearches = 25
     
@@ -42,7 +46,7 @@ if __name__ == '__main__':
     chrome = ChromeWebDriver(Edge,SafariMobile)
     chrome.startDesktopDriver()
     
-    for index in (random.sample(range(len(searchesList)), DesktopSearches)):
+    for index in (random.sample(range(len(searchesList)), min(DesktopSearches,len(searchesList)))):
         
         firefox.getDesktopUrl(base_url + searchesList[index])
         chrome.getDesktopUrl(base_url + searchesList[index])
@@ -54,7 +58,7 @@ if __name__ == '__main__':
     firefox.startMobileDriver()
     chrome.startMobileDriver()
     
-    for index in (random.sample(range(len(searchesList)), MobileSearches)):
+    for index in (random.sample(range(len(searchesList)), min(len(MobileSearches)))):
     
         firefox.getMobileUrl(base_url + searchesList[index])
         chrome.getMobileUrl(base_url + searchesList[index])
