@@ -1,6 +1,7 @@
 import random
 from time import sleep
 import sys
+import pip
 
 try:
     from FirefoxWebDriver import FirefoxWebDriver
@@ -15,7 +16,6 @@ SafariMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_2 like Mac OS X) AppleWebKi
 base_url = "http://www.bing.com/search?q="
 
 def checkDependencies():
-    import pip
     #Make sure that Selenium is installed
     installed_packages = pip.get_installed_distributions()
     flat_installed_packages = [package.project_name for package in installed_packages]
@@ -32,38 +32,69 @@ def checkDependencies():
         except:
             sys.stderr.write("ERROR: Need to install feedparser")
             
-     
+    if "beautifulsoup4" not in flat_installed_packages:
+        try:
+            pip.main(['install', '-U', 'beautifulsoup4'])
+        except:
+            sys.stderr.write("ERROR: Need to install beautifulsoup4")
+
+            
+            
+# def updateDependencies(dependencies):
+#     for dependency in dependencies:
+#         try:
+#             pip.main(['install', '-U', dependency])
+#         except:
+#             print ("Unable to update %s\n" % dependency)
+        
 if __name__ == '__main__':
 
+#     dependencies = ["selenium", "feedparser"]
+#     updateDependencies(dependencies)
+ 
+    firefox = False
+    chrome = True
+    
     DesktopSearches = 35
     MobileSearches = 25
     
     searchesList = Searches().getSearchesList()
+    if firefox == True:
+        firefox = FirefoxWebDriver(Edge,SafariMobile)
+        firefox.startDesktopDriver()
 
-    firefox = FirefoxWebDriver(Edge,SafariMobile)
-    firefox.startDesktopDriver()
-
-    chrome = ChromeWebDriver(Edge,SafariMobile)
-    chrome.startDesktopDriver()
+    if chrome == True:
+        chrome = ChromeWebDriver(Edge,SafariMobile)
+        chrome.startDesktopDriver()
     
     for index in (random.sample(range(len(searchesList)), min(DesktopSearches,len(searchesList)))):
-        
-        firefox.getDesktopUrl(base_url + searchesList[index])
-        chrome.getDesktopUrl(base_url + searchesList[index])
+        print( searchesList[index])
+        if firefox == True:
+            firefox.getDesktopUrl(base_url + searchesList[index])
+        if chrome == True:
+            chrome.getDesktopUrl(base_url + searchesList[index])
         sleep(random.uniform(1.0,3.25))
         
-    firefox.closeDesktopDriver()    
-    chrome.closeDesktopDriver()
+    if firefox == True:
+        firefox.closeDesktopDriver()
+    if chrome == True:    
+        chrome.closeDesktopDriver()
      
-    firefox.startMobileDriver()
-    chrome.startMobileDriver()
+    if firefox == True:
+        firefox.startMobileDriver()
+    if chrome == True:
+        chrome.startMobileDriver()
     
-    for index in (random.sample(range(len(searchesList)), min(len(MobileSearches)))):
-    
-        firefox.getMobileUrl(base_url + searchesList[index])
-        chrome.getMobileUrl(base_url + searchesList[index])
+    for index in (random.sample(range(len(searchesList)), min(MobileSearches, len(MobileSearches)))):
+        if firefox == True:
+            firefox.getMobileUrl(base_url + searchesList[index])
+        if chrome == True:
+            chrome.getMobileUrl(base_url + searchesList[index])
         sleep(random.uniform(1.0,3.25))
 
-    firefox.closeMobileDriver()    
-    chrome.closeMobileDriver()
+    if firefox == True:
+        firefox.closeMobileDriver()
+    if chrome == True:    
+        chrome.closeMobileDriver()
     
+
