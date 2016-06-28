@@ -52,7 +52,7 @@ if __name__ == '__main__':
 #     dependencies = ["selenium", "feedparser"]
 #     updateDependencies(dependencies)
  
-    firefox = False
+    firefox = True
     chrome = True
     
     DesktopSearches = 35
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     if chrome == True:
         chrome.startMobileDriver()
     
-    for index in (random.sample(range(len(searchesList)), min(MobileSearches, len(MobileSearches)))):
+    for index in (random.sample(range(len(searchesList)), min(MobileSearches, len(searchesList)))):
         if firefox == True:
             firefox.getMobileUrl(base_url + searchesList[index])
         if chrome == True:

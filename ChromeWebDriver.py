@@ -25,7 +25,6 @@ class ChromeWebDriver:
     linux32 = "linux32"
     
 
-    
     def __init__(self, desktopUA, mobileUA):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
@@ -65,6 +64,7 @@ class ChromeWebDriver:
                 break
             
     def __del__(self):
+        print ("del")
         os.remove(self.webDriver)
         
     def checkForChromeDriver(self):
@@ -98,7 +98,6 @@ class ChromeWebDriver:
                     break
             if urlfound == True:
                 break
-        print (downloadURL)
         
         pattern = "index.html\?path=([0-9a-fA-F-.]{1,7})\/"
         regexFind = re.search(pattern, downloadURL)
