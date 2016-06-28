@@ -94,7 +94,6 @@ if __name__ == '__main__':
             firefox.getMobileUrl(base_url + searchesList[index])
         if usechrome == True:
             chrome.getMobileUrl(base_url + searchesList[index])
-            print base_url + searchesList[index]
         sleep(random.uniform(1.0,3.25))
 
     if firefox == True:

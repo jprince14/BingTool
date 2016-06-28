@@ -130,7 +130,6 @@ class ChromeWebDriver:
                 os.chmod(filePath, st.st_mode | stat.S_IEXEC)
 
     def startDesktopDriver(self):
-        print self.chromedirect
         chrome_desktop_opts = Options()
         chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
