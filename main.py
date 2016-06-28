@@ -51,27 +51,29 @@ if __name__ == '__main__':
 
 #     dependencies = ["selenium", "feedparser"]
 #     updateDependencies(dependencies)
- 
-    firefox = True
-    chrome = True
+    usefirefox = False
+    usechrome = True
+    chrome = None
+    firefox = None
     
     DesktopSearches = 35
     MobileSearches = 25
     
     searchesList = Searches().getSearchesList()
-    if firefox == True:
+    if usefirefox == True:
         firefox = FirefoxWebDriver(Edge,SafariMobile)
         firefox.startDesktopDriver()
 
-    if chrome == True:
+    if usechrome == True:
         chrome = ChromeWebDriver(Edge,SafariMobile)
         chrome.startDesktopDriver()
-    
+        
+    print ("Desktop Searches:")
     for index in (random.sample(range(len(searchesList)), min(DesktopSearches,len(searchesList)))):
-        print( searchesList[index])
-        if firefox == True:
+        print (searchesList[index])
+        if usefirefox == True:
             firefox.getDesktopUrl(base_url + searchesList[index])
-        if chrome == True:
+        if usechrome == True:
             chrome.getDesktopUrl(base_url + searchesList[index])
         sleep(random.uniform(1.0,3.25))
         
@@ -85,11 +87,14 @@ if __name__ == '__main__':
     if chrome == True:
         chrome.startMobileDriver()
     
+    print ("Mobile Searches:")
     for index in (random.sample(range(len(searchesList)), min(MobileSearches, len(searchesList)))):
-        if firefox == True:
+        print (searchesList[index])
+        if usefirefox == True:
             firefox.getMobileUrl(base_url + searchesList[index])
-        if chrome == True:
+        if usechrome == True:
             chrome.getMobileUrl(base_url + searchesList[index])
+            print base_url + searchesList[index]
         sleep(random.uniform(1.0,3.25))
 
     if firefox == True:

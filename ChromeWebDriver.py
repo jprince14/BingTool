@@ -52,9 +52,7 @@ class ChromeWebDriver:
                 "Library/Application Support/Google/Chrome/Default/")
             self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
             
-            #driverUrl is a pointer
             self.os = ChromeWebDriver.mac
-        
         
         self.getChromeDriver()
         
@@ -64,8 +62,8 @@ class ChromeWebDriver:
                 break
             
     def __del__(self):
-        print ("del")
         os.remove(self.webDriver)
+        print ("Chrome Cleanup Complete")
         
     def checkForChromeDriver(self):
         for file in os.listdir(self.downloadsDir):
@@ -132,8 +130,9 @@ class ChromeWebDriver:
                 os.chmod(filePath, st.st_mode | stat.S_IEXEC)
 
     def startDesktopDriver(self):
+        print self.chromedirect
         chrome_desktop_opts = Options()
-#         chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
+        chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
     
