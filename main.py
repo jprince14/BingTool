@@ -60,6 +60,7 @@ if __name__ == '__main__':
     MobileSearches = 25
     
     searchesList = Searches().getSearchesList()
+    
     if usefirefox == True:
         firefox = FirefoxWebDriver(Edge,SafariMobile)
         firefox.startDesktopDriver()
@@ -77,14 +78,14 @@ if __name__ == '__main__':
             chrome.getDesktopUrl(base_url + searchesList[index])
         sleep(random.uniform(1.0,3.25))
         
-    if firefox == True:
+    if usefirefox == True:
         firefox.closeDesktopDriver()
-    if chrome == True:    
+    if usechrome == True:    
         chrome.closeDesktopDriver()
      
-    if firefox == True:
+    if usefirefox == True:
         firefox.startMobileDriver()
-    if chrome == True:
+    if usechrome == True:
         chrome.startMobileDriver()
     
     print ("Mobile Searches:")
