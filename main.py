@@ -51,13 +51,14 @@ if __name__ == '__main__':
 
 #     dependencies = ["selenium", "feedparser"]
 #     updateDependencies(dependencies)
-    usefirefox = False
+    usefirefox = True
     usechrome = True
+    
     chrome = None
     firefox = None
     
-    DesktopSearches = 35
-    MobileSearches = 25
+    DesktopSearches = 50
+    MobileSearches = 42
     
     searchesList = Searches().getSearchesList()
     
@@ -76,7 +77,7 @@ if __name__ == '__main__':
             firefox.getDesktopUrl(base_url + searchesList[index])
         if usechrome == True:
             chrome.getDesktopUrl(base_url + searchesList[index])
-        sleep(random.uniform(1.0,3.25))
+        sleep(random.uniform(1.0,2.75))
         
     if usefirefox == True:
         firefox.closeDesktopDriver()
@@ -95,11 +96,11 @@ if __name__ == '__main__':
             firefox.getMobileUrl(base_url + searchesList[index])
         if usechrome == True:
             chrome.getMobileUrl(base_url + searchesList[index])
-        sleep(random.uniform(1.0,3.25))
+        sleep(random.uniform(1.0,2.75))
 
-    if firefox == True:
+    if usefirefox == True:
         firefox.closeMobileDriver()
-    if chrome == True:    
+    if usechrome == True:    
         chrome.closeMobileDriver()
     
 
