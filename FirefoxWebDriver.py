@@ -3,13 +3,23 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.common.keys import Keys
 import platform
+import stat
+import bs4 as BeautifulSoup
 import os
+import sys
+import zipfile
+import tarfile
+import io
 
 class FirefoxWebDriver:
 
     def __init__(self, desktopUA, mobileUA):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
+        self.driverURL = "https://github.com/mozilla/geckodriver/releases/latest"
+        self.githubUrl = "https://github.com"
+        
+        self.getWebdriverURL(self.driverURL)
         
         if platform.system() == "Windows":
             self.controlKey = Keys.CONTROL
@@ -17,10 +27,11 @@ class FirefoxWebDriver:
             self.ffProfileDir = os.path.join(profilesDir, os.listdir(profilesDir)[0]).replace("\\","/")
             self.binary = "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
             
-            #TODO: automatically download driver and set path
-            downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
-            driverLocation = downloadsDir + "\\geckodriver-v0.10.0-win64\\"
-            os.environ["PATH"] = os.environ["PATH"] + ";" + driverLocation
+            self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
+            
+            os.environ["PATH"] = os.environ["PATH"] + ";" + self.downloadsDir
+            
+            self.getGeckoDriver_zip(self.windowsURL)
             
         elif platform.system() == "Darwin":
         #Mac
@@ -30,9 +41,70 @@ class FirefoxWebDriver:
             self.binary = "/usr/bin/firefox"
             
             self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
+            self.getGeckoDriver_tar_gz(self.macURL)
+                        
+        for file in os.listdir(self.downloadsDir):
+            if ((file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz"))):
+                self.driverBinary = os.path.join(self.downloadsDir, file)
+                st = os.stat(self.driverBinary)
+                os.chmod(self.driverBinary, st.st_mode | stat.S_IEXEC)
 
+    def getGeckoDriver_zip(self, URL):
+        if sys.version_info.major <= 2:
+            import urllib2
+            zipDriver = urllib2.urlopen(URL).read()
+            zip_ref = zipfile.ZipFile(io.BytesIO(zipDriver))
+            zip_ref.extractall(self.downloadsDir)
+            zip_ref.close() 
+        elif sys.version_info.major >= 3:
+            import urllib.request
+            zipDriver = urllib.request.urlopen(URL).read()
+            zip_ref = zipfile.ZipFile(io.BytesIO(zipDriver))
+            zip_ref.extractall(self.downloadsDir)
+            zip_ref.close()
+    
+    def getGeckoDriver_tar_gz(self, URL):
+        if sys.version_info.major <= 2:
+            import urllib2
+            tar_gz_file = urllib2.urlopen(URL).read()
+
+        elif sys.version_info.major >= 3:
+            import urllib.request
+            tar_gz_file = urllib.request.urlopen(URL).read()
+    
+        file_like_object = io.BytesIO(tar_gz_file)
+        tar = tarfile.open(fileobj=file_like_object)
+        tar.extractall(path=self.downloadsDir)
+        tar.close()
+        
+    def __del__(self):
+#         print ("Firefox __del__")
+        os.remove(self.driverBinary)
+        
+    def getWebdriverURL(self, driverPageURL):
+        if sys.version_info.major <= 2:
+            import urllib2
+            html_page = urllib2.urlopen(driverPageURL)
+        
+        elif sys.version_info.major >= 3:
+            import urllib.request
+            html_page = urllib.request.urlopen(driverPageURL)
+        
+        soup = BeautifulSoup.BeautifulSoup(html_page, "html.parser")
+        
+        downloadsSection = soup.find('ul', {"class": "release-downloads"})
+        
+        driverList = downloadsSection.findAll("a")
+        
+        for driver in driverList:
+            driverUrl = driver['href']
+            if "linux64.tar.gz" in driverUrl:
+                self.linuxURL = self.githubUrl + driverUrl
+            elif "macos.tar.gz" in driverUrl:
+                self.macURL = self.githubUrl + driverUrl
+            elif "win64.zip" in driverUrl:
+                self.windowsURL = self.githubUrl + driverUrl
             
-            #TODO: set path for mac, download gecko driver
     
     def startDesktopDriver(self):
         

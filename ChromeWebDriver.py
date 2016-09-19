@@ -42,7 +42,6 @@ class ChromeWebDriver:
             self.chromedirect = os.path.join(os.getenv('LOCALAPPDATA'),"Google\\Chrome\\User Data\\")
             self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
             
-            #driverUrl is a pointer
             self.os = ChromeWebDriver.win
             
         elif platform.system() == "Darwin":
