@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.keys import Keys
 import platform
 import stat
@@ -28,6 +29,7 @@ class FirefoxWebDriver:
             self.binary = "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
             
             self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
+            print (self.downloadsDir)
             
             os.environ["PATH"] = os.environ["PATH"] + ";" + self.downloadsDir
             
@@ -113,9 +115,10 @@ class FirefoxWebDriver:
         
         caps = DesiredCapabilities.FIREFOX
         caps["marionette"] = True
-        caps["binary"] = self.binary
         
-        self.firefoxDesktopDriver = webdriver.Firefox(capabilities=caps, firefox_profile=firefoxDeskopProfile)
+        binary = FirefoxBinary(self.binary)
+        
+        self.firefoxDesktopDriver = webdriver.Firefox(firefox_binary=binary,capabilities=caps, firefox_profile=firefoxDeskopProfile)
     
     def startMobileDriver(self):    
         
@@ -124,9 +127,10 @@ class FirefoxWebDriver:
         
         caps = DesiredCapabilities.FIREFOX
         caps["marionette"] = True
-        caps["binary"] = self.binary
+
+        binary = FirefoxBinary(self.binary)
         
-        self.firefoxMobileDriver = webdriver.Firefox(capabilities=caps, firefox_profile=firefoxMobileProfile)
+        self.firefoxMobileDriver = webdriver.Firefox(firefox_binary=binary,capabilities=caps,desired_capabilities=caps, firefox_profile=firefoxMobileProfile)
         
     def getDesktopUrl(self, url):
         if not url.startswith("http"):
