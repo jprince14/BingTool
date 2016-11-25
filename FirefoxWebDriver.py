@@ -118,7 +118,7 @@ class FirefoxWebDriver:
         
         binary = FirefoxBinary(self.binary)
         
-        self.firefoxDesktopDriver = webdriver.Firefox(firefox_binary=binary,capabilities=caps, firefox_profile=firefoxDeskopProfile)
+        self.firefoxDesktopDriver = webdriver.Firefox(firefox_binary=binary, capabilities=caps, firefox_profile=firefoxDeskopProfile)
     
     def startMobileDriver(self):    
         
@@ -130,7 +130,7 @@ class FirefoxWebDriver:
 
         binary = FirefoxBinary(self.binary)
         
-        self.firefoxMobileDriver = webdriver.Firefox(firefox_binary=binary,capabilities=caps,desired_capabilities=caps, firefox_profile=firefoxMobileProfile)
+        self.firefoxMobileDriver = webdriver.Firefox(firefox_binary=binary, capabilities=caps, firefox_profile=firefoxMobileProfile)
         
     def getDesktopUrl(self, url):
         if not url.startswith("http"):
