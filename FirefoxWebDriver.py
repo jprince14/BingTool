@@ -26,7 +26,17 @@ class FirefoxWebDriver:
             self.controlKey = Keys.CONTROL
             profilesDir = os.path.join(os.getenv('APPDATA') , "Mozilla\\Firefox\\Profiles\\")
             self.ffProfileDir = os.path.join(profilesDir, os.listdir(profilesDir)[0]).replace("\\","/")
-            self.binary = "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
+            widowsFile_32bit = "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
+            widowsFile_64bit = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+
+            if os.path.isfile(widowsFile_32bit):
+                self.binary = widowsFile_32bit
+            elif os.path.isfile(widowsFile_64bit):
+                self.binary = widowsFile_64bit
+            else:
+                print ("Unable to finf firefox binary\n")
+                raise "U"
+                
             
             self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
             print (self.downloadsDir)
