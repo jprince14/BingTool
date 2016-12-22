@@ -2,6 +2,7 @@ import random
 from time import sleep
 import sys
 import pip
+import threading
 
 try:
     from FirefoxWebDriver import FirefoxWebDriver
@@ -47,6 +48,12 @@ def checkDependencies():
 #         except:
 #             print ("Unable to update %s\n" % dependency)
         
+global searchesList
+
+def init_searches():
+    print ("top of searches")
+    searchesList = Searches().getSearchesList()
+    
 if __name__ == '__main__':
 
 #     dependencies = ["selenium", "feedparser"]
@@ -57,10 +64,10 @@ if __name__ == '__main__':
     chrome = None
     firefox = None
     
-    DesktopSearches = 50
+    DesktopSearches = 65
     MobileSearches = 42
-    
-    searchesList = Searches().getSearchesList()
+    searchesThread = threading.Thread(name='searches_init', target=init_searches)
+    searchesThread.start()
     
     if usefirefox == True:
         firefox = FirefoxWebDriver(Edge,SafariMobile)
@@ -69,7 +76,13 @@ if __name__ == '__main__':
     if usechrome == True:
         chrome = ChromeWebDriver(Edge,SafariMobile)
         chrome.startDesktopDriver()
-        
+    
+    print ("before searches join")
+    searchesThread.join()
+    print ("After searches join")
+    print ("----------searchesList")
+    print (searchesList)
+    
     print ("Desktop Searches:")
     for index in (random.sample(range(len(searchesList)), min(DesktopSearches,len(searchesList)))):
         print (searchesList[index])
