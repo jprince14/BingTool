@@ -48,12 +48,25 @@ def checkDependencies():
 #         except:
 #             print ("Unable to update %s\n" % dependency)
         
-global searchesList
-
+searchesList = None
+chromeObj = None
+firefoxObj = None
+    
 def init_searches():
-    print ("top of searches")
+    global searchesList 
     searchesList = Searches().getSearchesList()
     
+def init_chrome(useChrome):
+    global chromeObj
+    if usechrome == True:
+        chromeObj = ChromeWebDriver(Edge,SafariMobile)
+
+def init_firefox(useFirefox):
+    global firefoxObj        
+    if usefirefox == True:
+        firefoxObj = FirefoxWebDriver(Edge,SafariMobile)
+        firefoxObj.startDesktopDriver() 
+        
 if __name__ == '__main__':
 
 #     dependencies = ["selenium", "feedparser"]
@@ -61,59 +74,54 @@ if __name__ == '__main__':
     usefirefox = True
     usechrome = True
     
-    chrome = None
-    firefox = None
+
     
     DesktopSearches = 65
     MobileSearches = 42
     searchesThread = threading.Thread(name='searches_init', target=init_searches)
     searchesThread.start()
     
-    if usefirefox == True:
-        firefox = FirefoxWebDriver(Edge,SafariMobile)
-        firefox.startDesktopDriver()
+    startChrome = threading.Thread(name='startChrome', target=init_chrome, args=(usechrome,))
+    startChrome.start()
+    startFirefox = threading.Thread(name='startFirefox', target=init_firefox, args=(usefirefox,))
+    startFirefox.start()
 
-    if usechrome == True:
-        chrome = ChromeWebDriver(Edge,SafariMobile)
-        chrome.startDesktopDriver()
     
-    print ("before searches join")
     searchesThread.join()
-    print ("After searches join")
-    print ("----------searchesList")
-    print (searchesList)
+    startFirefox.join()
+    startChrome.join()
     
     print ("Desktop Searches:")
     for index in (random.sample(range(len(searchesList)), min(DesktopSearches,len(searchesList)))):
         print (searchesList[index])
         if usefirefox == True:
-            firefox.getDesktopUrl(base_url + searchesList[index])
+            firefoxObj.getDesktopUrl(base_url + searchesList[index])
         if usechrome == True:
-            chrome.getDesktopUrl(base_url + searchesList[index])
+            chromeObj.getDesktopUrl(base_url + searchesList[index])
         sleep(random.uniform(1.0,2.75))
         
     if usefirefox == True:
-        firefox.closeDesktopDriver()
+        firefoxObj.closeDesktopDriver()
     if usechrome == True:    
-        chrome.closeDesktopDriver()
+        chromeObj.closeDesktopDriver()
      
     if usefirefox == True:
-        firefox.startMobileDriver()
+        firefoxObj.startMobileDriver()
     if usechrome == True:
-        chrome.startMobileDriver()
+        chromeObj.startMobileDriver()
     
     print ("Mobile Searches:")
     for index in (random.sample(range(len(searchesList)), min(MobileSearches, len(searchesList)))):
         print (searchesList[index])
         if usefirefox == True:
-            firefox.getMobileUrl(base_url + searchesList[index])
+            firefoxObj.getMobileUrl(base_url + searchesList[index])
         if usechrome == True:
-            chrome.getMobileUrl(base_url + searchesList[index])
+            chromeObj.getMobileUrl(base_url + searchesList[index])
         sleep(random.uniform(1.0,2.75))
 
     if usefirefox == True:
-        firefox.closeMobileDriver()
+        firefoxObj.closeMobileDriver()
     if usechrome == True:    
-        chrome.closeMobileDriver()
+        chromeObj.closeMobileDriver()
     
 
