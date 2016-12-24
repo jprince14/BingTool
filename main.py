@@ -60,6 +60,8 @@ def init_chrome(useChrome):
     global chromeObj
     if usechrome == True:
         chromeObj = ChromeWebDriver(Edge,SafariMobile)
+        chromeObj.startDesktopDriver() 
+
 
 def init_firefox(useFirefox):
     global firefoxObj        
