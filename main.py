@@ -60,6 +60,7 @@ def init_chrome(useChrome):
     global chromeObj
     if usechrome == True:
         chromeObj = ChromeWebDriver(Edge,SafariMobile)
+        chromeObj.startDesktopDriver()
 
 def init_firefox(useFirefox):
     global firefoxObj        
@@ -74,23 +75,21 @@ if __name__ == '__main__':
     usefirefox = True
     usechrome = True
     
-
+    DesktopSearches = 70
     
-    DesktopSearches = 65
     MobileSearches = 42
     searchesThread = threading.Thread(name='searches_init', target=init_searches)
     searchesThread.start()
-    
+
+    startFirefox = threading.Thread(name='startFirefox', target=init_firefox, args=(usefirefox,))
+    startFirefox.start()    
     startChrome = threading.Thread(name='startChrome', target=init_chrome, args=(usechrome,))
     startChrome.start()
-    startFirefox = threading.Thread(name='startFirefox', target=init_firefox, args=(usefirefox,))
-    startFirefox.start()
 
-    
     searchesThread.join()
-    startFirefox.join()
     startChrome.join()
-    
+    startFirefox.join()
+
     print ("Desktop Searches:")
     for index in (random.sample(range(len(searchesList)), min(DesktopSearches,len(searchesList)))):
         print (searchesList[index])
