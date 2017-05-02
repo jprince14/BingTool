@@ -138,6 +138,9 @@ class ChromeWebDriver:
         chrome_mobile_opts = Options()
         chrome_mobile_opts.add_argument("user-agent=" + self.mobileUA)
         chrome_mobile_opts.add_argument("user-data-dir=" + self.chromedirect)
+        #prefs prevents gps popups
+        prefs = {"profile.default_content_setting_values.geolocation" :2}
+        chrome_mobile_opts.add_experimental_option("prefs",prefs)
         self.chromeMobileDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_mobile_opts)
         
     def getDesktopUrl(self, url):
