@@ -16,6 +16,13 @@ SafariMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_2 like Mac OS X) AppleWebKi
 
 base_url = "http://www.bing.com/search?q="
 
+def updateDependencies(dependencies):
+    for dependency in dependencies:
+        try:
+            pip.main(['install', '-U', dependency])
+        except:
+            print ("Unable to update %s\n" % dependency)
+
 def checkDependencies():
     #Make sure that Selenium is installed
     installed_packages = pip.get_installed_distributions()
@@ -38,19 +45,13 @@ def checkDependencies():
             pip.main(['install', '-U', 'beautifulsoup4'])
         except:
             sys.stderr.write("ERROR: Need to install beautifulsoup4")
-
+    
+    updateDependencies(["selenium", "feedparser", "beautifulsoup4"])
             
-            
-# def updateDependencies(dependencies):
-#     for dependency in dependencies:
-#         try:
-#             pip.main(['install', '-U', dependency])
-#         except:
-#             print ("Unable to update %s\n" % dependency)
         
 searchesList = None
-chromeObj = None
-firefoxObj = None
+# chromeObj = None
+# firefoxObj = None
     
 def init_searches():
     global searchesList 
@@ -67,22 +68,56 @@ def init_firefox(useFirefox):
     if usefirefox == True:
         firefoxObj = FirefoxWebDriver(Edge,SafariMobile)
         firefoxObj.startDesktopDriver() 
+
+def firefox_search(usefirefox, numSearches, browser):
+    global searchesList 
+    global firefoxObj        
+
+    if usefirefox == False:
+        return 
+    for index in (random.sample(range(len(searchesList)), min(numSearches,len(searchesList)))):
+        if browser == "desktop":
+            firefoxObj.getDesktopUrl(base_url + searchesList[index])
+        elif browser == "mobile":
+            firefoxObj.getMobileUrl(base_url + searchesList[index])
+        sleep(random.uniform(1.0,2.75))
+    if browser == "desktop":
+        firefoxObj.closeDesktopDriver()
+        firefoxObj.startMobileDriver()
+    elif browser == "mobile":
+        firefoxObj.closeMobileDriver()
         
+def chrome_search(usechrome, numSearches, browser):
+    global searchesList 
+    global chromeObj
+
+    if usechrome == False:
+        return 
+    for index in (random.sample(range(len(searchesList)), min(numSearches,len(searchesList)))):
+        if browser == "desktop":
+            chromeObj.getDesktopUrl(base_url + searchesList[index])
+        elif browser == "mobile":
+            chromeObj.getMobileUrl(base_url + searchesList[index])
+        sleep(random.uniform(1.0,2.75))
+    if browser == "desktop":
+        chromeObj.closeDesktopDriver()
+        chromeObj.startMobileDriver()
+    elif browser == "mobile":
+        chromeObj.closeMobileDriver()
+
 if __name__ == '__main__':
 
-#     dependencies = ["selenium", "feedparser"]
-#     updateDependencies(dependencies)
     usefirefox = True
     usechrome = True
-    
     DesktopSearches = 70
-    
     MobileSearches = 42
+    
     searchesThread = threading.Thread(name='searches_init', target=init_searches)
     searchesThread.start()
 
     startFirefox = threading.Thread(name='startFirefox', target=init_firefox, args=(usefirefox,))
-    startFirefox.start()    
+    startFirefox.start()
+        
     startChrome = threading.Thread(name='startChrome', target=init_chrome, args=(usechrome,))
     startChrome.start()
 
@@ -90,37 +125,21 @@ if __name__ == '__main__':
     startChrome.join()
     startFirefox.join()
 
-    print ("Desktop Searches:")
-    for index in (random.sample(range(len(searchesList)), min(DesktopSearches,len(searchesList)))):
-        print (searchesList[index])
-        if usefirefox == True:
-            firefoxObj.getDesktopUrl(base_url + searchesList[index])
-        if usechrome == True:
-            chromeObj.getDesktopUrl(base_url + searchesList[index])
-        sleep(random.uniform(1.0,2.75))
-        
-    if usefirefox == True:
-        firefoxObj.closeDesktopDriver()
-    if usechrome == True:    
-        chromeObj.closeDesktopDriver()
-     
-    if usefirefox == True:
-        firefoxObj.startMobileDriver()
-    if usechrome == True:
-        chromeObj.startMobileDriver()
+    firefoxDesktopSearches = threading.Thread(name='ff_desktop', target=firefox_search, args=(usefirefox, DesktopSearches, "desktop"))
+    firefoxDesktopSearches.start()
+    chromeDesktopSearches = threading.Thread(name='chrome_desktop', target=chrome_search, args=(usechrome, DesktopSearches, "desktop"))
+    chromeDesktopSearches.start()
     
-    print ("Mobile Searches:")
-    for index in (random.sample(range(len(searchesList)), min(MobileSearches, len(searchesList)))):
-        print (searchesList[index])
-        if usefirefox == True:
-            firefoxObj.getMobileUrl(base_url + searchesList[index])
-        if usechrome == True:
-            chromeObj.getMobileUrl(base_url + searchesList[index])
-        sleep(random.uniform(1.0,2.75))
+    firefoxDesktopSearches.join()
+    chromeDesktopSearches.join()
 
-    if usefirefox == True:
-        firefoxObj.closeMobileDriver()
-    if usechrome == True:    
-        chromeObj.closeMobileDriver()
+    firefoxMobileSearches = threading.Thread(name='ff_mobile', target=firefox_search, args=(usefirefox, MobileSearches, "mobile"))
+    firefoxMobileSearches.start()
+    chromeMobileSearches = threading.Thread(name='chrome_mobile', target=chrome_search, args=(usechrome, MobileSearches, "mobile"))
+    chromeMobileSearches.start()
+
+    chromeMobileSearches.join()
+    firefoxMobileSearches.join()
+    
     
 

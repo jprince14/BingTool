@@ -147,15 +147,11 @@ class ChromeWebDriver:
         if not url.startswith("http"):
             url = "http://" + url
         self.chromeDesktopDriver.get(url)
-        self.chromeDesktopDriver.find_element_by_tag_name("body").send_keys(self.controlKey + "t")
-        self.chromeDesktopDriver.find_element_by_tag_name("body").send_keys(self.controlKey + Keys.TAB)
          
     def getMobileUrl(self, url):
         if not url.startswith("http"):
             url = "http://" + url
         self.chromeMobileDriver.get(url)
-        self.chromeMobileDriver.find_element_by_tag_name("body").send_keys(self.controlKey + "t")
-        self.chromeMobileDriver.find_element_by_tag_name("body").send_keys(self.controlKey + Keys.TAB)
 
     def closeDesktopDriver(self):
         self.chromeDesktopDriver.quit()

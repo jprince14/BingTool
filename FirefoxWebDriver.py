@@ -4,7 +4,6 @@ from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.keys import Keys
 import platform
-import stat
 import bs4 as BeautifulSoup
 import os
 import sys
@@ -34,9 +33,8 @@ class FirefoxWebDriver:
             elif os.path.isfile(widowsFile_64bit):
                 self.binary = widowsFile_64bit
             else:
-                print ("Unable to finf firefox binary\n")
-                raise "U"
-                
+                print ("Unable to find firefox binary\n")
+                raise "Unable to find firefox binary"
             
             self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
             print (self.downloadsDir)
@@ -58,8 +56,7 @@ class FirefoxWebDriver:
         for file in os.listdir(self.downloadsDir):
             if ((file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz"))):
                 self.driverBinary = os.path.join(self.downloadsDir, file)
-                st = os.stat(self.driverBinary)
-                os.chmod(self.driverBinary, st.st_mode | stat.S_IEXEC)
+                os.chmod(self.driverBinary, 0o777)
 
     def getGeckoDriver_zip(self, URL):
         if sys.version_info.major <= 2:
@@ -145,13 +142,11 @@ class FirefoxWebDriver:
         if not url.startswith("http"):
             url = "http://" + url
         self.firefoxDesktopDriver.get(url)
-#         self.firefoxDesktopDriver.find_element_by_tag_name("body").send_keys(self.controlKey + "t")
          
     def getMobileUrl(self, url):
         if not url.startswith("http"):
             url = "http://" + url
         self.firefoxMobileDriver.get(url)
-#         self.firefoxMobileDriver.find_element_by_tag_name("body").send_keys(self.controlKey + "t")
 
     def closeDesktopDriver(self):
         self.firefoxDesktopDriver.quit()
