@@ -1,8 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from selenium.webdriver.common.keys import Keys
 import platform
 import bs4 as BeautifulSoup
 import os
@@ -18,46 +15,49 @@ class FirefoxWebDriver:
         self.mobileUA = mobileUA
         self.driverURL = "https://github.com/mozilla/geckodriver/releases/latest"
         self.githubUrl = "https://github.com"
-        
+        self.mobileRunning = False
+        self.desktopRunning = False
         self.getWebdriverURL(self.driverURL)
         
         if platform.system() == "Windows":
-            self.controlKey = Keys.CONTROL
-            profilesDir = os.path.join(os.getenv('APPDATA') , "Mozilla\\Firefox\\Profiles\\")
-            self.ffProfileDir = os.path.join(profilesDir, os.listdir(profilesDir)[0])
-            widowsFile_32bit = "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
-            widowsFile_64bit = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
-
-            if os.path.isfile(widowsFile_32bit):
-                self.binary = widowsFile_32bit
-            elif os.path.isfile(widowsFile_64bit):
-                self.binary = widowsFile_64bit
-            else:
-                print ("Unable to find firefox binary\n")
-                raise "Unable to find firefox binary"
-            
+            profilesDir = os.path.join(os.getenv('APPDATA') , "Mozilla", "Firefox", "Profiles")
+            self.getDefaultProfile(profilesDir)
+                        
             self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
-            print (self.downloadsDir)
             
             os.environ["PATH"] = os.environ["PATH"] + ";" + self.downloadsDir
             
+            self.checkIfGeckoDriverAlreadyExists()
             self.getGeckoDriver_zip(self.windowsURL)
             
         elif platform.system() == "Darwin":
         #Mac
-            self.controlKey = Keys.COMMAND
-            profilesDir = os.path.join(os.environ['HOME'], "Library/Application Support/Firefox/Profiles/")
-            self.ffProfileDir = os.path.join(profilesDir + os.listdir(profilesDir)[0])
-            self.binary = "/usr/bin/firefox"
+            profilesDir = os.path.join(os.environ['HOME'], "Library", "Application Support", "Firefox", "Profiles")
+            self.getDefaultProfile(profilesDir)
             
             self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
+            
+            self.checkIfGeckoDriverAlreadyExists()
             self.getGeckoDriver_tar_gz(self.macURL)
                         
         for file in os.listdir(self.downloadsDir):
             if ((file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz"))):
                 self.driverBinary = os.path.join(self.downloadsDir, file)
                 os.chmod(self.driverBinary, 0o777)
+    
+    def getDefaultProfile(self, profileDir):
+        for file in os.listdir(profileDir):
+            if file.endswith(".default"):
+                self.ffProfileDir = os.path.join(profileDir, file)
+                return
+            
+        raise ("Unable to find default firefox profile directory")
 
+    def checkIfGeckoDriverAlreadyExists(self):
+        for file in os.listdir(self.downloadsDir):
+            if (file.startswith("geckodriver")):
+                os.remove(os.path.join(self.downloadsDir, file))
+                
     def getGeckoDriver_zip(self, URL):
         if sys.version_info.major <= 2:
             import urllib2
@@ -87,8 +87,14 @@ class FirefoxWebDriver:
         tar.close()
         
     def __del__(self):
-#         print ("Firefox __del__")
-        os.remove(self.driverBinary)
+        if self.desktopRunning == True:
+            self.closeDesktopDriver()
+        if self.mobileRunning == True:
+            self.closeMobileDriver()
+        try:
+            os.remove(self.driverBinary)
+        except:
+            print ("Failed to delete firefox web driver binary \"%s\"" % (self.driverBinary))
         
     def getWebdriverURL(self, driverPageURL):
         if sys.version_info.major <= 2:
@@ -116,40 +122,48 @@ class FirefoxWebDriver:
             
     
     def startDesktopDriver(self):
-        firefoxDeskopProfile = FirefoxProfile(profile_directory=self.ffProfileDir)
+        
+        firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         firefoxDeskopProfile.set_preference("general.useragent.override", self.desktopUA)
-        
-        caps = DesiredCapabilities.FIREFOX
-        caps["marionette"] = True
-        
-        binary = FirefoxBinary(self.binary)
-        
-        self.firefoxDesktopDriver = webdriver.Firefox(firefox_binary=binary, capabilities=caps, firefox_profile=firefoxDeskopProfile)
+                       
+        self.firefoxDesktopDriver = webdriver.Firefox(firefox_profile=firefoxDeskopProfile)
+        self.desktopRunning = True
     
     def startMobileDriver(self):    
         
-        firefoxMobileProfile = FirefoxProfile(profile_directory=self.ffProfileDir)
+        firefoxMobileProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         firefoxMobileProfile.set_preference("general.useragent.override", self.mobileUA)
-        
-        caps = DesiredCapabilities.FIREFOX
-        caps["marionette"] = True
-
-        binary = FirefoxBinary(self.binary)
-        
-        self.firefoxMobileDriver = webdriver.Firefox(firefox_binary=binary, capabilities=caps, firefox_profile=firefoxMobileProfile)
+                
+        self.firefoxMobileDriver = webdriver.Firefox(firefox_profile=firefoxMobileProfile)
+        self.mobileRunning = True
         
     def getDesktopUrl(self, url):
-        if not url.startswith("http"):
-            url = "http://" + url
-        self.firefoxDesktopDriver.get(url)
+        if self.desktopRunning == True:
+            if not url.startswith("http"):
+                url = "http://" + url
+            self.firefoxDesktopDriver.get(url)
+        else:
+            print ("Firefox desktop webdriver is not open")
          
     def getMobileUrl(self, url):
-        if not url.startswith("http"):
-            url = "http://" + url
-        self.firefoxMobileDriver.get(url)
-
+        if self.mobileRunning == True:
+            if not url.startswith("http"):
+                url = "http://" + url
+            self.firefoxMobileDriver.get(url)
+        else:
+            print ("Firefox desktop webdriver is not open")
     def closeDesktopDriver(self):
-        self.firefoxDesktopDriver.quit()
-    
+        if self.desktopRunning == True:
+            try:
+                self.firefoxDesktopDriver.quit()
+                self.desktopRunning = False
+            except Exception as e:
+                print ("Hit exception following exception when trying to close the Firefox Desktop driver\n\t%s" % e)
+            
     def closeMobileDriver(self):
-        self.firefoxMobileDriver.quit()     
+        if self.mobileRunning == True:
+            try:
+                self.firefoxMobileDriver.quit()
+                self.mobileRunning = False
+            except mobileRunning as e:
+                print ("Hit exception following exception when trying to close the Firefox Mobile driver\n\t%s" % e)

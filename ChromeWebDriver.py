@@ -24,7 +24,6 @@ class ChromeWebDriver:
     linux64 = "linux64"
     linux32 = "linux32"
     
-
     def __init__(self, desktopUA, mobileUA):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
@@ -33,6 +32,9 @@ class ChromeWebDriver:
         self.macDriver = None
         self.linux64Driver = None
         self.linux32Driver = None
+        
+        self.desktopRunning = False
+        self.mobileRunning = False
         
         self.DriverURLDict = {ChromeWebDriver.win: None, ChromeWebDriver.mac: None,
                               ChromeWebDriver.linux32 : None, ChromeWebDriver.linux64 : None}
@@ -61,7 +63,15 @@ class ChromeWebDriver:
                 break
             
     def __del__(self):
-        os.remove(self.webDriver)
+        if self.desktopRunning == True:
+            self.closeDesktopDriver()
+        if self.mobileRunning == True:
+            self.closeMobileDriver()
+        try:
+            os.remove(self.webDriver)
+        except:
+            print ("Failed to delete chrome web driver binary \"%s\"" % (self.webDriver))
+        
         print ("Chrome Cleanup Complete")
         
     def checkForChromeDriver(self):
@@ -133,6 +143,7 @@ class ChromeWebDriver:
         chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
+        self.desktopRunning = True
     
     def startMobileDriver(self):    
         chrome_mobile_opts = Options()
@@ -142,21 +153,38 @@ class ChromeWebDriver:
         prefs = {"profile.default_content_setting_values.geolocation" :2}
         chrome_mobile_opts.add_experimental_option("prefs",prefs)
         self.chromeMobileDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_mobile_opts)
+        self.mobileRunning = True
         
     def getDesktopUrl(self, url):
-        if not url.startswith("http"):
-            url = "http://" + url
-        self.chromeDesktopDriver.get(url)
-         
+        if self.desktopRunning == True:
+            if not url.startswith("http"):
+                url = "http://" + url
+            self.chromeDesktopDriver.get(url)
+        else:
+            print ("Chrome desktop webdriver is not open")
+                 
     def getMobileUrl(self, url):
-        if not url.startswith("http"):
-            url = "http://" + url
-        self.chromeMobileDriver.get(url)
+        if self.mobileRunning == True:
+            if not url.startswith("http"):
+                url = "http://" + url
+            self.chromeMobileDriver.get(url)
+        else:
+            print ("Chrome mobile webdriver is not open")
 
     def closeDesktopDriver(self):
-        self.chromeDesktopDriver.quit()
-    
+        if self.desktopRunning == True:
+            try:
+                self.chromeDesktopDriver.quit()
+                self.desktopRunning = False
+            except Exception as e:
+                print ("Hit exception following exception when trying to close the Chrome Desktop driver\n\t%s" % e)
+        
     def closeMobileDriver(self):
-        self.chromeMobileDriver.quit()     
+        if self.mobileRunning == True:
+            try:
+                self.chromeMobileDriver.quit()
+                self.mobileRunning = False
+            except Exception as e:
+                print ("Hit exception following exception when trying to close the Chrome Mobile driver\n\t%s" % e)
 
         
