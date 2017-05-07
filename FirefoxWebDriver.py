@@ -96,6 +96,9 @@ class FirefoxWebDriver:
         except:
             print ("Failed to delete firefox web driver binary \"%s\"" % (self.driverBinary))
         
+        print ("Firefox Cleanup Complete")
+
+        
     def getWebdriverURL(self, driverPageURL):
         if sys.version_info.major <= 2:
             import urllib2
@@ -165,5 +168,5 @@ class FirefoxWebDriver:
             try:
                 self.firefoxMobileDriver.quit()
                 self.mobileRunning = False
-            except mobileRunning as e:
+            except Exception as e:
                 print ("Hit exception following exception when trying to close the Firefox Mobile driver\n\t%s" % e)

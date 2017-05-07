@@ -140,6 +140,7 @@ class ChromeWebDriver:
 
     def startDesktopDriver(self):
         chrome_desktop_opts = Options()
+        chrome_desktop_opts.add_argument('disable-infobars')
         chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
@@ -147,6 +148,7 @@ class ChromeWebDriver:
     
     def startMobileDriver(self):    
         chrome_mobile_opts = Options()
+        chrome_mobile_opts.add_argument('disable-infobars')
         chrome_mobile_opts.add_argument("user-agent=" + self.mobileUA)
         chrome_mobile_opts.add_argument("user-data-dir=" + self.chromedirect)
         #prefs prevents gps popups
@@ -174,6 +176,8 @@ class ChromeWebDriver:
     def closeDesktopDriver(self):
         if self.desktopRunning == True:
             try:
+                self.chromeDesktopDriver.stop_client()
+                self.chromeDesktopDriver.close()
                 self.chromeDesktopDriver.quit()
                 self.desktopRunning = False
             except Exception as e:
@@ -182,6 +186,8 @@ class ChromeWebDriver:
     def closeMobileDriver(self):
         if self.mobileRunning == True:
             try:
+                self.chromeMobileDriver.stop_client()
+                self.chromeMobileDriver.close()
                 self.chromeMobileDriver.quit()
                 self.mobileRunning = False
             except Exception as e:
