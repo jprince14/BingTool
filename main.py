@@ -10,7 +10,38 @@ try:
     from Searches import Searches   
 except:
     checkDependencies()
+    
+def updateDependencies(self, dependencies):
+    for dependency in dependencies:
+        try:
+            pip.main(['install', '-U', dependency])
+        except:
+            print ("Unable to update %s\n" % dependency)
 
+def checkDependencies(self, ):
+    #Make sure that Selenium is installed
+    installed_packages = pip.get_installed_distributions()
+    flat_installed_packages = [package.project_name for package in installed_packages]
+    if "selenium" not in flat_installed_packages:
+        try:
+            pip.main(['install', '-U', 'selenium'])
+        except:
+            print ("NEED TO INSTALL SELENIUM")
+            sys.stderr.write("ERROR: Need to install selenium")
+            
+    if "feedparser" not in flat_installed_packages:
+        try:
+            pip.main(['install', '-U', 'feedparser'])
+        except:
+            sys.stderr.write("ERROR: Need to install feedparser")
+            
+    if "beautifulsoup4" not in flat_installed_packages:
+        try:
+            pip.main(['install', '-U', 'beautifulsoup4'])
+        except:
+            sys.stderr.write("ERROR: Need to install beautifulsoup4")
+    
+    self.updateDependencies(["selenium", "feedparser", "beautifulsoup4"])
 
 
 class BingRewards(object):
@@ -20,13 +51,11 @@ class BingRewards(object):
     MOBILE = "mobile"
     base_url = "http://www.bing.com/search?q="
     
-    def __init__(self, desktopSearches, MobileSearches, UseFirefox, UseChrome):
-        self.desktopSearches = desktopSearches
-        self.MobileSearches = MobileSearches
+    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome):
         self.UseFirefox = UseFirefox
         self.UseChrome = UseChrome
         
-        self.numSearches = {BingRewards.DESKTOP : self.desktopSearches, BingRewards.MOBILE : self.MobileSearches}
+        self.numSearches = {BingRewards.DESKTOP : desktopSearches, BingRewards.MOBILE : mobileSearches}
 
         searchesThread = threading.Thread(name='searches_init', target=self.init_searches)
         searchesThread.start()
@@ -40,39 +69,6 @@ class BingRewards(object):
         searchesThread.join()
         startChrome.join()
         startFirefox.join()
-        
-        
-    def updateDependencies(self, dependencies):
-        for dependency in dependencies:
-            try:
-                pip.main(['install', '-U', dependency])
-            except:
-                print ("Unable to update %s\n" % dependency)
-    
-    def checkDependencies(self, ):
-        #Make sure that Selenium is installed
-        installed_packages = pip.get_installed_distributions()
-        flat_installed_packages = [package.project_name for package in installed_packages]
-        if "selenium" not in flat_installed_packages:
-            try:
-                pip.main(['install', '-U', 'selenium'])
-            except:
-                print ("NEED TO INSTALL SELENIUM")
-                sys.stderr.write("ERROR: Need to install selenium")
-                
-        if "feedparser" not in flat_installed_packages:
-            try:
-                pip.main(['install', '-U', 'feedparser'])
-            except:
-                sys.stderr.write("ERROR: Need to install feedparser")
-                
-        if "beautifulsoup4" not in flat_installed_packages:
-            try:
-                pip.main(['install', '-U', 'beautifulsoup4'])
-            except:
-                sys.stderr.write("ERROR: Need to install beautifulsoup4")
-        
-        self.updateDependencies(["selenium", "feedparser", "beautifulsoup4"])
                         
     def init_searches(self, ):
         self.searchesList = Searches().getSearchesList()
@@ -152,13 +148,13 @@ class BingRewards(object):
 if __name__ == '__main__':
 
     usefirefox = True
-    usechrome = True
+    usechrome = False
     DesktopSearches = 70
     MobileSearches = 40
-    bingRewards = BingRewards(desktopSearches=DesktopSearches, MobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome)
+    bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome)
     bingRewards.runDesktopSearches()
     bingRewards.runMobileSearches()
-    print ("COMPLETE")
+    print ("Main COMPLETE")
 # 
 
     
