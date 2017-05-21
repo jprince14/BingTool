@@ -60,15 +60,19 @@ class BingRewards(object):
         searchesThread = threading.Thread(name='searches_init', target=self.init_searches)
         searchesThread.start()
         
-        startFirefox = threading.Thread(name='startFirefox', target=self.init_firefox, args=())
-        startFirefox.start()
-             
-        startChrome = threading.Thread(name='startChrome', target=self.init_chrome, args=())
-        startChrome.start()
-        
+        if self.UseFirefox == True:
+            startFirefox = threading.Thread(name='startFirefox', target=self.init_firefox, args=())
+            startFirefox.start()
+                 
+        if self.UseChrome == True:
+            startChrome = threading.Thread(name='startChrome', target=self.init_chrome, args=())
+            startChrome.start()
+            
         searchesThread.join()
-        startChrome.join()
-        startFirefox.join()
+        if self.UseChrome == True:
+            startChrome.join()
+        if self.UseFirefox == True:
+            startFirefox.join()
                         
     def init_searches(self, ):
         self.searchesList = Searches().getSearchesList()
@@ -76,10 +80,14 @@ class BingRewards(object):
     def init_chrome(self, ):
         if self.UseChrome == True:
             self.chromeObj = ChromeWebDriver(BingRewards.Edge,BingRewards.SafariMobile)
+            if self.chromeObj == None:
+                raise ("ERROR: chromeObj = None")
     
     def init_firefox(self, ):
         if self.UseFirefox == True:
             self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile)
+            if self.firefoxObj == None:
+                raise ("ERROR: firefoxObj = None")
     
     def firefox_search(self, browser):
         
@@ -104,21 +112,19 @@ class BingRewards(object):
             self.firefoxObj.closeMobileDriver()
             
     def chrome_search(self, browser):       
-       
         if self.UseChrome == False:
             return 
-        
         if browser == BingRewards.DESKTOP:
-            self.chromeObj.startDesktopDriver() 
+            self.chromeObj.startDesktopDriver()
         elif browser == BingRewards.MOBILE:
             self.chromeObj.startMobileDriver()
-            
+
         for index in (random.sample(range(len(self.searchesList)), min(self.numSearches[browser],len(self.searchesList)))):
             if browser == BingRewards.DESKTOP:
                 self.chromeObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
                 self.chromeObj.getMobileUrl(BingRewards.base_url + self.searchesList[index])
-            sleep(random.uniform(1.0,2.75))
+            sleep(random.uniform(1.25,2.75))
             
         if browser == BingRewards.DESKTOP:
             self.chromeObj.closeDesktopDriver()
@@ -148,12 +154,16 @@ class BingRewards(object):
 if __name__ == '__main__':
 
     usefirefox = True
-    usechrome = False
+    usechrome = True
     DesktopSearches = 70
     MobileSearches = 40
     bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome)
+    print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
+    print ("runDesktopSearches Complete")
     bingRewards.runMobileSearches()
+    print ("runMobileSearches Complete")
+    
     print ("Main COMPLETE")
 # 
 

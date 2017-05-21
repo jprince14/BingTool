@@ -130,8 +130,8 @@ class FirefoxWebDriver:
         
         firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         firefoxDeskopProfile.set_preference("general.useragent.override", self.desktopUA)
-                       
-        self.firefoxDesktopDriver = webdriver.Firefox(firefox_profile=firefoxDeskopProfile)
+
+        self.firefoxDesktopDriver = webdriver.Firefox(firefox_profile=firefoxDeskopProfile, executable_path=self.driverBinary)       
         self.desktopRunning = True
     
     def startMobileDriver(self):    
@@ -139,6 +139,7 @@ class FirefoxWebDriver:
         firefoxMobileProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         firefoxMobileProfile.set_preference("general.useragent.override", self.mobileUA)
                 
+        self.firefoxMobileDriver = webdriver.Firefox(firefox_profile=firefoxMobileProfile, executable_path=self.driverBinary)
         self.mobileRunning = True
         
     def getDesktopUrl(self, url):

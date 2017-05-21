@@ -60,6 +60,8 @@ class ChromeWebDriver:
         for file in os.listdir(self.downloadsDir):
             if ((file.startswith("chromedriver")) and (not file.endswith(".zip"))):
                 self.webDriver = os.path.join(self.downloadsDir,file)
+                os.chmod(self.webDriver, 0o777)
+
                 break
             
     def __del__(self):
@@ -141,6 +143,8 @@ class ChromeWebDriver:
     def startDesktopDriver(self):
         chrome_desktop_opts = Options()
         chrome_desktop_opts.add_argument('disable-infobars')
+        #prefs prevents gps popups
+        prefs = {"profile.default_content_setting_values.geolocation" :2}
         chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
