@@ -49,7 +49,7 @@ class BingRewards(object):
     SafariMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/47.0.2526.70 Mobile/13C71 Safari/601.1.46"
     DESKTOP = "desktop"
     MOBILE = "mobile"
-    base_url = "http://www.bing.com/search?q="
+    base_url = "https://www.bing.com/search?q="
     
     def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome):
         self.UseFirefox = UseFirefox
