@@ -104,7 +104,7 @@ class BingRewards(object):
                 self.firefoxObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
                 self.firefoxObj.getMobileUrl(BingRewards.base_url + self.searchesList[index])
-            sleep(random.uniform(1.0,2.75))
+            sleep(random.uniform(1.25,3.25))
             
         if browser == BingRewards.DESKTOP:
             self.firefoxObj.closeDesktopDriver()
@@ -124,7 +124,7 @@ class BingRewards(object):
                 self.chromeObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
                 self.chromeObj.getMobileUrl(BingRewards.base_url + self.searchesList[index])
-            sleep(random.uniform(1.25,2.75))
+            sleep(random.uniform(1.25,3.25))
             
         if browser == BingRewards.DESKTOP:
             self.chromeObj.closeDesktopDriver()
