@@ -51,14 +51,17 @@ class BingRewards(object):
     MOBILE = "mobile"
     base_url = "https://www.bing.com/search?q="
     
-    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome):
+    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None):
         self.UseFirefox = UseFirefox
         self.UseChrome = UseChrome
         
         self.numSearches = {BingRewards.DESKTOP : desktopSearches, BingRewards.MOBILE : mobileSearches}
 
-        searchesThread = threading.Thread(name='searches_init', target=self.init_searches)
-        searchesThread.start()
+        if searchesList == None:
+            searchesThread = threading.Thread(name='searches_init', target=self.init_searches)
+            searchesThread.start()
+        else:
+            self.searchesList = searchesList
         
         if self.UseFirefox == True:
             startFirefox = threading.Thread(name='startFirefox', target=self.init_firefox, args=())
@@ -67,8 +70,9 @@ class BingRewards(object):
         if self.UseChrome == True:
             startChrome = threading.Thread(name='startChrome', target=self.init_chrome, args=())
             startChrome.start()
-            
-        searchesThread.join()
+           
+        if searchesList == None: 
+            searchesThread.join()
         if self.UseChrome == True:
             startChrome.join()
         if self.UseFirefox == True:
@@ -151,8 +155,14 @@ class BingRewards(object):
         firefoxMobileSearches.join()
         chromeMobileSearches.join()
 
-if __name__ == '__main__':
+def testChromeMobileGPSCrash():
+    searchList = ["find my location", "near me", "weather"]
+    bingRewards = BingRewards(desktopSearches=0, mobileSearches=3, UseFirefox=False, UseChrome=True, searchesList=searchList)
+    bingRewards.runMobileSearches()
+    sleep(5)
 
+if __name__ == '__main__':
+    
     usefirefox = True
     usechrome = True
     DesktopSearches = 70
@@ -160,13 +170,12 @@ if __name__ == '__main__':
     bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
+ 
     print ("runDesktopSearches Complete")
     bingRewards.runMobileSearches()
     print ("runMobileSearches Complete")
-    
+     
     print ("Main COMPLETE")
-# 
-
     
-    
-
+    #testChromeMobileGPSCrash()
+ 
