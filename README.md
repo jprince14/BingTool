@@ -11,27 +11,39 @@ Known Issues
 1) Sometimes when firefox or chrome updates it takes selenium or webdrivers to start supporting the latest version. If the script starts crashing on one browser try running the following command:
 
 	Linux/mac : sudo pip install -U selenium
+	
 	Windows : python -m pip install -U selenium
 
 Instructions to set up BingTool
 
 1) Download Python https://www.python.org/downloads/
 
-2) Download and Update pip. Pip already ships with Python so just run the command below
+2) Download and Update pip. pip already ships with Python so just run the command below
 
 	Linux/mac - "pip install -U pip"
+	
 	Windows - "python -m pip install -U pip"
 	
+	
 3) Install the prerequisite packages. Run the following commands:
-	Linux/mac:
-		sudo pip install selenium
-		sudo pip install feedparser
-		sudo pip install beautifulsoup4
-	Windows 
-		python -m pip install selenium
-		python -m pip install feedparser
-		python -m pip install beautifulsoup4
 
+	Linux/mac:
+	
+		sudo pip install selenium
+		
+		sudo pip install feedparser
+		
+		sudo pip install beautifulsoup4
+		
+	
+	Windows (within an admin command prompt): 
+	
+		pip install selenium
+		
+		pip install feedparser
+		
+		pip install beautifulsoup4
+		
 
 Instructions for running BingTool
 
@@ -41,12 +53,24 @@ Instructions for running BingTool
 
 2) Update the main.py file to reflect what browser(s) you are using. set the useFirefox and useChrome variable to the appropriate boolean values (True or False).
 
-3) Close all instances of the browser(s) that BingTool will be using
+3) Ensure that you are signed into your outlook/hotmail/live/bing account within each respective browser
 
-4) Run the tool by running "python main.py"
+4) Close all instances of the browser(s) that BingTool will be using
 
-5) Run BingTool once a day to get maximum rewards. After running BingTool for the first time start at step 3 for all subsequent runs.
+5) Run the tool by running "python main.py"
+
+6) Run BingTool once a day to get maximum rewards. After running BingTool for the first time start at step 3 for all subsequent runs.
 
 Tips
 
 For Windows the pip commands need to be run in an admin command prompt
+
+If the script stops working after a browser update run:
+
+	Linux/mac:
+	
+		sudo pip install -U selenium
+		
+	Windows (within an admin command prompt)
+	
+		pip install -U selenium
