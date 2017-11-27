@@ -4,44 +4,54 @@ import sys
 import pip
 import threading
 
+REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4"]
+
 try:
     from FirefoxWebDriver import FirefoxWebDriver
     from ChromeWebDriver import ChromeWebDriver
     from Searches import Searches   
 except:
     checkDependencies()
-    
-def updateDependencies(self, dependencies):
+
+def getOutdatedPackages():
+    list_command = pip.commands.list.ListCommand()
+    options, args = list_command.parse_args([])
+    packages = pip.utils.get_installed_distributions()
+    result = (list_command.get_outdated(packages, options))
+    outOfDatePackages = []
+    for stuff in result:
+        outOfDatePackages.append(str(stuff).split(" ")[0])
+    return outOfDatePackages
+
+def checkPip(packageList):
+    outdatedPackages = getOutdatedPackages()
+    for packageName in packageList:
+        if packageName in outdatedPackages:
+            print ("%s is outdated" % packageName)
+            result = pip.main(['install', '-U', packageName])
+            if result != 0:
+                print ("package %s needs to be updated" % packageName)
+
+def updateDependencies(dependencies):
     for dependency in dependencies:
         try:
             pip.main(['install', '-U', dependency])
         except:
             print ("Unable to update %s\n" % dependency)
 
-def checkDependencies(self, ):
+def checkDependencies(packageList):
     #Make sure that Selenium is installed
     installed_packages = pip.get_installed_distributions()
     flat_installed_packages = [package.project_name for package in installed_packages]
-    if "selenium" not in flat_installed_packages:
-        try:
-            pip.main(['install', '-U', 'selenium'])
-        except:
-            print ("NEED TO INSTALL SELENIUM")
-            sys.stderr.write("ERROR: Need to install selenium")
-            
-    if "feedparser" not in flat_installed_packages:
-        try:
-            pip.main(['install', '-U', 'feedparser'])
-        except:
-            sys.stderr.write("ERROR: Need to install feedparser")
-            
-    if "beautifulsoup4" not in flat_installed_packages:
-        try:
-            pip.main(['install', '-U', 'beautifulsoup4'])
-        except:
-            sys.stderr.write("ERROR: Need to install beautifulsoup4")
+    for packageName in packageList:
+        if packageName not in flat_installed_packages:
+            try:
+                pip.main(['install', '-U', packageName])
+            except:
+                print ("NEED TO INSTALL \"%s\"" % packageName)
+                sys.stderr.write("ERROR: Need to install selenium")
     
-    self.updateDependencies(["selenium", "feedparser", "beautifulsoup4"])
+    self.updateDependencies(packageList)
 
 
 class BingRewards(object):
@@ -162,7 +172,7 @@ def testChromeMobileGPSCrash():
     sleep(5)
 
 if __name__ == '__main__':
-    
+    checkPip(REQUIRED_PACKAGES)
     usefirefox = True
     usechrome = True
     DesktopSearches = 70
@@ -170,12 +180,12 @@ if __name__ == '__main__':
     bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
- 
+  
     print ("runDesktopSearches Complete")
     bingRewards.runMobileSearches()
     print ("runMobileSearches Complete")
-     
+      
     print ("Main COMPLETE")
-    
+#     
     #testChromeMobileGPSCrash()
  
