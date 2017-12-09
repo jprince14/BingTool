@@ -109,13 +109,19 @@ class FirefoxWebDriver:
         elif sys.version_info.major >= 3:
             import urllib.request
             html_page = urllib.request.urlopen(driverPageURL)
-        
+               
         soup = BeautifulSoup.BeautifulSoup(html_page, "html.parser")
         
-        downloadsSection = soup.find('ul', {"class": "release-downloads"})
+        #Old way
+#         downloadsSection = soup.find('ul', {"class": "release-downloads"})
+#         if downloadsSection == None: 
+#             downloadsSection= soup.find('ul', {"class": "Latest release"})
+#         driverList = downloadsSection.findAll("a")
         
-        driverList = downloadsSection.findAll("a")
-        
+        assets = soup.find('h2')
+        ul = assets.find_next('ul')
+        driverList = ul.findAll("a")        
+             
         for driver in driverList:
             driverUrl = driver['href']
             if "linux64.tar.gz" in driverUrl:
@@ -125,7 +131,8 @@ class FirefoxWebDriver:
             elif "win64.zip" in driverUrl:
                 self.windowsURL = self.githubUrl + driverUrl
             
-    
+        print (self.windowsURL)
+        
     def startDesktopDriver(self):
         
         firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)

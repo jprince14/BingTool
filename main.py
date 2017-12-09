@@ -24,6 +24,7 @@ def getOutdatedPackages():
     return outOfDatePackages
 
 def checkPip(packageList):
+    outOfDatePackages = []
     outdatedPackages = getOutdatedPackages()
     for packageName in packageList:
         if packageName in outdatedPackages:
@@ -31,6 +32,8 @@ def checkPip(packageList):
             result = pip.main(['install', '-U', packageName])
             if result != 0:
                 print ("package %s needs to be updated" % packageName)
+                outOfDatePackages.append(packageName)
+    return outOfDatePackages
 
 def updateDependencies(dependencies):
     for dependency in dependencies:
@@ -172,7 +175,11 @@ def testChromeMobileGPSCrash():
     sleep(5)
 
 if __name__ == '__main__':
-    checkPip(REQUIRED_PACKAGES)
+    outOfDatePackages = checkPip(REQUIRED_PACKAGES)
+    if len(outOfDatePackages) != 0:
+        print ("\n\npip contains out of date packages, update pip before running again")
+        print (outOfDatePackages)
+        exit()
     usefirefox = True
     usechrome = True
     DesktopSearches = 70
