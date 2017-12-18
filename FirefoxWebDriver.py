@@ -130,9 +130,7 @@ class FirefoxWebDriver:
                 self.macURL = self.githubUrl + driverUrl
             elif "win64.zip" in driverUrl:
                 self.windowsURL = self.githubUrl + driverUrl
-            
-        print (self.windowsURL)
-        
+                    
     def startDesktopDriver(self):
         
         firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
