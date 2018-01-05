@@ -17,6 +17,9 @@ class FirefoxWebDriver:
         self.githubUrl = "https://github.com"
         self.mobileRunning = False
         self.desktopRunning = False
+        self.windowsURL = None
+        self.macURL = None
+        self.linuxURL = None
         self.getWebdriverURL(self.driverURL)
         self.driverBinary = None
         
@@ -130,6 +133,9 @@ class FirefoxWebDriver:
                 self.macURL = self.githubUrl + driverUrl
             elif "win64.zip" in driverUrl:
                 self.windowsURL = self.githubUrl + driverUrl
+                
+        if self.windowsURL == None or self.macURL == None or self.linuxURL == None:      
+            raise Exception("Failed to find URL's for Firefox Webdrivers")
                     
     def startDesktopDriver(self):
         

@@ -3,6 +3,7 @@ from time import sleep
 import sys
 import pip
 import threading
+import os
 
 REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4"]
 
@@ -53,6 +54,8 @@ def checkDependencies(packageList):
             except:
                 print ("NEED TO INSTALL \"%s\"" % packageName)
                 sys.stderr.write("ERROR: Need to install selenium")
+                print ("run the command \"pip install -U %s\"" % packageName)
+                sys.stderr.write("run the command \"pip install -U %s\"" % packageName)
     
     self.updateDependencies(packageList)
 
@@ -116,7 +119,10 @@ class BingRewards(object):
         elif browser == BingRewards.MOBILE:
             self.firefoxObj.startMobileDriver()
         
+        searchNum = 0
         for index in (random.sample(range(len(self.searchesList)), min(self.numSearches[browser],len(self.searchesList)))):
+            print ("Firefox search %d : \"%s\"" % (searchNum, self.searchesList[index]))
+            searchNum+=1
             if browser == BingRewards.DESKTOP:
                 self.firefoxObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
@@ -136,7 +142,10 @@ class BingRewards(object):
         elif browser == BingRewards.MOBILE:
             self.chromeObj.startMobileDriver()
 
+        searchNum = 0
         for index in (random.sample(range(len(self.searchesList)), min(self.numSearches[browser],len(self.searchesList)))):
+            print ("Chrome search %d : \"%s\"" % (searchNum, self.searchesList[index]))
+            searchNum+=1
             if browser == BingRewards.DESKTOP:
                 self.chromeObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
@@ -175,6 +184,9 @@ def testChromeMobileGPSCrash():
     sleep(5)
 
 if __name__ == '__main__':
+    #This allows the script to work with a windows scheduler
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    
     outOfDatePackages = checkPip(REQUIRED_PACKAGES)
     if len(outOfDatePackages) != 0:
         print ("\n\npip contains out of date packages, update pip before running again")
