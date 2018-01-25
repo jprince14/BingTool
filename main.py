@@ -119,7 +119,7 @@ class BingRewards(object):
         elif browser == BingRewards.MOBILE:
             self.firefoxObj.startMobileDriver()
         
-        for index in range(len(self.searchesList)):
+        for index in range(self.numSearches[browser]):
             print ("Firefox search %d : \"%s\"" % (index+1, self.searchesList[index]))
             if browser == BingRewards.DESKTOP:
                 self.firefoxObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
@@ -140,7 +140,7 @@ class BingRewards(object):
         elif browser == BingRewards.MOBILE:
             self.chromeObj.startMobileDriver()
 
-        for index in range(len(self.searchesList)):
+        for index in range(self.numSearches[browser]):
             print ("Chrome search %d : \"%s\"" % (index+1, self.searchesList[index]))
             if browser == BingRewards.DESKTOP:
                 self.chromeObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
