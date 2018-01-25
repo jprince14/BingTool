@@ -1,12 +1,16 @@
 import sys
 import feedparser
+import random
+import extraSearchesList
 
 class Searches:
     
     feedURL = "http://www.google.com/trends/hottrends/atom/feed"
 
-    def __init__(self):
+    def __init__(self, requiredNumSearches):
+        self.requiredNumSearches = requiredNumSearches
         self.generateSearchesListfromXML(self.getxml())
+        
         
     def getxml(self):
         if sys.version_info.major <= 2:
@@ -27,6 +31,16 @@ class Searches:
             for subStr in description:
                 if len(subStr) != 0:
                     self.searchesList.append(subStr.replace(' ', '%20'))
+                    
+        if len(self.searchesList) < self.requiredNumSearches:
+            extraSearches = extraSearchesList.additionalList
+            random.shuffle(extraSearches)
+            searchesToAdd = self.requiredNumSearches - len(self.searchesList)
+            
+            for additionalSearch in range(searchesToAdd+1):
+                self.searchesList.append(extraSearches[additionalSearch])
+            
+        random.shuffle(self.searchesList)
         return self.searchesList
 
     def getSearchesList(self):

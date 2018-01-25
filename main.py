@@ -70,7 +70,7 @@ class BingRewards(object):
     def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None):
         self.UseFirefox = UseFirefox
         self.UseChrome = UseChrome
-        
+        self.totalSearches = desktopSearches + mobileSearches
         self.numSearches = {BingRewards.DESKTOP : desktopSearches, BingRewards.MOBILE : mobileSearches}
 
         if searchesList == None:
@@ -92,10 +92,10 @@ class BingRewards(object):
         if self.UseChrome == True:
             startChrome.join()
         if self.UseFirefox == True:
-            startFirefox.join()
+            startFirefox.join()           
                         
     def init_searches(self, ):
-        self.searchesList = Searches().getSearchesList()
+        self.searchesList = Searches(self.totalSearches).getSearchesList()
         
     def init_chrome(self, ):
         if self.UseChrome == True:
@@ -119,14 +119,12 @@ class BingRewards(object):
         elif browser == BingRewards.MOBILE:
             self.firefoxObj.startMobileDriver()
         
-        searchNum = 0
-        for index in (random.sample(range(len(self.searchesList)), min(self.numSearches[browser],len(self.searchesList)))):
-            print ("Firefox search %d : \"%s\"" % (searchNum, self.searchesList[index]))
-            searchNum+=1
+        for index in len(self.searchesList):
+            print ("Firefox search %d : \"%s\"" % (searchNum+1, self.searchesList[index]))
             if browser == BingRewards.DESKTOP:
                 self.firefoxObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
-                self.firefoxObj.getMobileUrl(BingRewards.base_url + self.searchesList[index])
+                self.firefoxObj.getMobileUrl(BingRewards.base_url + self.searchesList[index + self.numSearches[BingRewards.DESKTOP]])
             sleep(random.uniform(1.25,3.25))
             
         if browser == BingRewards.DESKTOP:
@@ -142,14 +140,12 @@ class BingRewards(object):
         elif browser == BingRewards.MOBILE:
             self.chromeObj.startMobileDriver()
 
-        searchNum = 0
-        for index in (random.sample(range(len(self.searchesList)), min(self.numSearches[browser],len(self.searchesList)))):
-            print ("Chrome search %d : \"%s\"" % (searchNum, self.searchesList[index]))
-            searchNum+=1
+        for index in len(self.searchesList):
+            print ("Chrome search %d : \"%s\"" % (searchNum+1, self.searchesList[index]))
             if browser == BingRewards.DESKTOP:
                 self.chromeObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
-                self.chromeObj.getMobileUrl(BingRewards.base_url + self.searchesList[index])
+                self.chromeObj.getMobileUrl(BingRewards.base_url + self.searchesList[index + self.numSearches[BingRewards.DESKTOP]])
             sleep(random.uniform(1.25,3.25))
             
         if browser == BingRewards.DESKTOP:
