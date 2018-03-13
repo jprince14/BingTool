@@ -41,6 +41,15 @@ class FirefoxWebDriver:
             
             self.checkIfGeckoDriverAlreadyExists()
             self.getGeckoDriver_tar_gz(self.macURL)
+        
+        elif platform.system() == "Linux":
+            profilesDir = os.path.join(os.environ['HOME'], ".mozilla", "firefox")
+            self.getDefaultProfile(profilesDir)
+            
+            self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
+            
+            self.checkIfGeckoDriverAlreadyExists()
+            self.getGeckoDriver_tar_gz(self.linuxURL)            
                         
         for file in os.listdir(self.downloadsDir):
             if (file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz")) and (not file.endswith(".log")) and os.path.isfile(os.path.join(self.downloadsDir, file)):

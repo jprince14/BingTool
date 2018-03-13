@@ -191,7 +191,7 @@ if __name__ == '__main__':
     usefirefox = True
     usechrome = True
     DesktopSearches = 70
-    MobileSearches = 40
+    MobileSearches = 50
     bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()

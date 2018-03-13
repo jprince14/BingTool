@@ -14,8 +14,8 @@ class ChromeWebDriver:
     SUCCESS = 0
     FAILURE = 1
     
-    linux32 = "/chromedriver_linux32.zip"
-    linux64 = "/chromedriver_linux64.zip"
+    linux32_file = "/chromedriver_linux32.zip"
+    linux64_file = "/chromedriver_linux64.zip"
     mac32 = "/chromedriver_mac32.zip"
     windows32 = "/chromedriver_win32.zip"
     
@@ -41,7 +41,7 @@ class ChromeWebDriver:
                 
         if platform.system() == "Windows":
             self.controlKey = Keys.CONTROL
-            self.chromedirect = os.path.join(os.getenv('LOCALAPPDATA'),"Google\\Chrome\\User Data\\")
+            self.chromedirect = os.path.join(os.getenv('LOCALAPPDATA'),"Google", "Chrome", "User Data")
             self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
             
             self.os = ChromeWebDriver.win
@@ -49,12 +49,18 @@ class ChromeWebDriver:
         elif platform.system() == "Darwin":
         #Mac
             self.controlKey = Keys.COMMAND
-            self.chromedirect = os.path.join(os.getenv('HOME'), \
-                "Library/Application Support/Google/Chrome/Default/")
+            self.chromedirect = os.path.join(os.getenv('HOME'),\
+                "Library", "Application Support", "Google", "Chrome", "Default")
             self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
-            
             self.os = ChromeWebDriver.mac
         
+        elif platform.system() == "Linux":
+            self.controlKey = Keys.COMMAND
+            self.chromedirect = os.path.join(os.getenv('HOME'),\
+                ".config", "Google", "Chrome", "Default")
+            self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
+            self.os = ChromeWebDriver.linux64
+
         self.getChromeDriver()
         
         for file in os.listdir(self.downloadsDir):
@@ -114,10 +120,12 @@ class ChromeWebDriver:
      
         baseurl = "http://chromedriver.storage.googleapis.com/"
         
-        self.DriverURLDict[self.linux32] = baseurl + version + ChromeWebDriver.linux32
-        self.DriverURLDict[self.linux64] = baseurl + version + ChromeWebDriver.linux64
+        self.DriverURLDict[self.linux32] = baseurl + version + ChromeWebDriver.linux32_file
+        self.DriverURLDict[self.linux64] = baseurl + version + ChromeWebDriver.linux64_file
         self.DriverURLDict[self.mac] = baseurl + version + ChromeWebDriver.mac32
         self.DriverURLDict[self.win] = baseurl + version + ChromeWebDriver.windows32   
+        
+        print(self.DriverURLDict[self.linux64])
         
     def getChromeDriver(self):
         self.getDriverUrl()
