@@ -124,9 +124,7 @@ class ChromeWebDriver:
         self.DriverURLDict[self.linux64] = baseurl + version + ChromeWebDriver.linux64_file
         self.DriverURLDict[self.mac] = baseurl + version + ChromeWebDriver.mac32
         self.DriverURLDict[self.win] = baseurl + version + ChromeWebDriver.windows32   
-        
-        print(self.DriverURLDict[self.linux64])
-        
+                
     def getChromeDriver(self):
         self.getDriverUrl()
         if sys.version_info.major <= 2:

@@ -26,7 +26,11 @@ class Searches:
         self.searchesList = []
         trendsRss = feedparser.parse(xml)
         for item in trendsRss[ "items" ]:
-            self.searchesList.append(item["title"].replace(' ', '%20'))
+            searchTerm = item["title"].replace(' ', '%20').encode("utf-8")
+            if sys.version_info[0] >= 3:
+                self.searchesList.append(str(searchTerm, 'utf-8'))    
+            else:
+                self.searchesList.append(str(searchTerm))
             description = (item["description"]).split(", ")
             for subStr in description:
                 if len(subStr) != 0:
