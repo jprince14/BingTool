@@ -194,7 +194,6 @@ def parseArgs():
 
 def main():
     args = parseArgs()
-    print (args)
     
     #This allows the script to work with a windows scheduler
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -211,7 +210,7 @@ def main():
     MobileSearches = 50
     useHeadless = True
     bingRewards = BingRewards(desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches, 
-                              UseFirefox=args.firefox, UseChrome=argschrome, useHeadless=args.headless)
+                              UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
   
