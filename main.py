@@ -4,6 +4,7 @@ import sys
 import pip
 import threading
 import os
+import argparse
 
 REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4"]
 
@@ -121,7 +122,7 @@ class BingRewards(object):
             self.firefoxObj.startMobileDriver()
         
         for index in range(self.numSearches[browser]):
-            print ("Firefox search %d : \"%s\"" % (index+1, self.searchesList[index]))
+            print ("Firefox %s search %d : \"%s\"" % (browser, index+1, self.searchesList[index]))
             if browser == BingRewards.DESKTOP:
                 self.firefoxObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
@@ -142,7 +143,7 @@ class BingRewards(object):
             self.chromeObj.startMobileDriver()
 
         for index in range(self.numSearches[browser]):
-            print ("Chrome search %d : \"%s\"" % (index+1, self.searchesList[index]))
+            print ("Chrome %s search %d : \"%s\"" % (browser, index+1, self.searchesList[index]))
             if browser == BingRewards.DESKTOP:
                 self.chromeObj.getDesktopUrl(BingRewards.base_url + self.searchesList[index])
             elif browser == BingRewards.MOBILE:
@@ -180,7 +181,21 @@ def testChromeMobileGPSCrash():
     bingRewards.runMobileSearches()
     sleep(5)
 
-if __name__ == '__main__':
+
+def parseArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--firefox', dest='firefox', action='store_true', help='include this option to use firefox')
+    parser.add_argument('-c', '--chrome', dest='chrome', action='store_true', help='include this option to use chrome')
+    parser.add_argument('-m', '--mobile', dest='mobile_searches', type=int, default=50, help='Number of Mobile Searches')
+    parser.add_argument('-d', '--desktop', dest='desktop_searches', type=int, default=70, help='Number of Desktop Searches')
+    parser.add_argument('--headless', dest='headless', action='store_true', help='include this option to use headless mode')
+    return parser.parse_args()
+
+
+def main():
+    args = parseArgs()
+    print (args)
+    
     #This allows the script to work with a windows scheduler
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     
@@ -195,7 +210,8 @@ if __name__ == '__main__':
     DesktopSearches = 70
     MobileSearches = 50
     useHeadless = True
-    bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome, useHeadless=useHeadless)
+    bingRewards = BingRewards(desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches, 
+                              UseFirefox=args.firefox, UseChrome=argschrome, useHeadless=args.headless)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
   
@@ -204,6 +220,6 @@ if __name__ == '__main__':
     print ("runMobileSearches Complete")
       
     print ("Main COMPLETE")
-#     
-    #testChromeMobileGPSCrash()
+if __name__ == '__main__':
+    main()
  
