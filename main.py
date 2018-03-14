@@ -183,7 +183,7 @@ def testChromeMobileGPSCrash():
 
 
 def parseArgs():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-f', '--firefox', dest='firefox', action='store_true', help='include this option to use firefox')
     parser.add_argument('-c', '--chrome', dest='chrome', action='store_true', help='include this option to use chrome')
     parser.add_argument('-m', '--mobile', dest='mobile_searches', type=int, default=50, help='Number of Mobile Searches')
