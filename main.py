@@ -67,11 +67,12 @@ class BingRewards(object):
     MOBILE = "mobile"
     base_url = "https://www.bing.com/search?q="
     
-    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None):
+    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None, useHeadless=False):
         self.UseFirefox = UseFirefox
         self.UseChrome = UseChrome
         self.totalSearches = desktopSearches + mobileSearches
         self.numSearches = {BingRewards.DESKTOP : desktopSearches, BingRewards.MOBILE : mobileSearches}
+        self.useHeadless = useHeadless
 
         if searchesList == None:
             searchesThread = threading.Thread(name='searches_init', target=self.init_searches)
@@ -99,13 +100,13 @@ class BingRewards(object):
         
     def init_chrome(self, ):
         if self.UseChrome == True:
-            self.chromeObj = ChromeWebDriver(BingRewards.Edge,BingRewards.SafariMobile)
+            self.chromeObj = ChromeWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless)
             if self.chromeObj == None:
                 raise ("ERROR: chromeObj = None")
     
     def init_firefox(self, ):
         if self.UseFirefox == True:
-            self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile)
+            self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless)
             if self.firefoxObj == None:
                 raise ("ERROR: firefoxObj = None")
     
@@ -193,7 +194,8 @@ if __name__ == '__main__':
     usechrome = True
     DesktopSearches = 70
     MobileSearches = 50
-    bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome)
+    useHeadless = True
+    bingRewards = BingRewards(desktopSearches=DesktopSearches, mobileSearches=MobileSearches, UseFirefox=usefirefox, UseChrome=usechrome, useHeadless=useHeadless)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
   

@@ -10,7 +10,7 @@ import stat
 import bs4 as BeautifulSoup
 import re
     
-class ChromeWebDriver:
+class ChromeWebDriver(object):
     SUCCESS = 0
     FAILURE = 1
     
@@ -24,7 +24,7 @@ class ChromeWebDriver:
     linux64 = "linux64"
     linux32 = "linux32"
     
-    def __init__(self, desktopUA, mobileUA):
+    def __init__(self, desktopUA, mobileUA, useHeadless=False):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         
@@ -35,7 +35,8 @@ class ChromeWebDriver:
         
         self.desktopRunning = False
         self.mobileRunning = False
-        
+        self.useHeadless = useHeadless
+
         self.DriverURLDict = {ChromeWebDriver.win: None, ChromeWebDriver.mac: None,
                               ChromeWebDriver.linux32 : None, ChromeWebDriver.linux64 : None}
                 
@@ -149,8 +150,9 @@ class ChromeWebDriver:
     def startDesktopDriver(self):
         chrome_desktop_opts = Options()
         chrome_desktop_opts.add_argument('disable-infobars')
+        chrome_desktop_opts.set_headless(self.useHeadless)
         #prefs prevents gps popups
-        prefs = {"profile.default_content_setting_values.geolocation" :2}
+        prefs = {"profile.default_content_setting_values.geolocation" : 2}
         chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
@@ -159,6 +161,7 @@ class ChromeWebDriver:
     def startMobileDriver(self):    
         chrome_mobile_opts = Options()
         chrome_mobile_opts.add_argument('disable-infobars')
+        chrome_mobile_opts.set_headless(self.useHeadless)
         chrome_mobile_opts.add_argument("user-agent=" + self.mobileUA)
         chrome_mobile_opts.add_argument("user-data-dir=" + self.chromedirect)
         

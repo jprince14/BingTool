@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import platform
 import bs4 as BeautifulSoup
@@ -8,9 +9,9 @@ import zipfile
 import tarfile
 import io
 
-class FirefoxWebDriver:
+class FirefoxWebDriver(object):
 
-    def __init__(self, desktopUA, mobileUA):
+    def __init__(self, desktopUA, mobileUA, useHeadless=False):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         self.driverURL = "https://github.com/mozilla/geckodriver/releases/latest"
@@ -22,6 +23,7 @@ class FirefoxWebDriver:
         self.linuxURL = None
         self.getWebdriverURL(self.driverURL)
         self.driverBinary = None
+        self.useHeadless = useHeadless
         
         if platform.system() == "Windows":
             profilesDir = os.path.join(os.getenv('APPDATA') , "Mozilla", "Firefox", "Profiles")
@@ -148,18 +150,22 @@ class FirefoxWebDriver:
                     
     def startDesktopDriver(self):
         
+        options = Options()
+        options.set_headless(self.useHeadless)
         firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         firefoxDeskopProfile.set_preference("general.useragent.override", self.desktopUA)
 
-        self.firefoxDesktopDriver = webdriver.Firefox(firefox_profile=firefoxDeskopProfile, executable_path=self.driverBinary)       
+        self.firefoxDesktopDriver = webdriver.Firefox(firefox_profile=firefoxDeskopProfile, executable_path=self.driverBinary, firefox_options=options)       
         self.desktopRunning = True
     
     def startMobileDriver(self):    
         
+        options = Options()
+        options.set_headless(self.useHeadless)
         firefoxMobileProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         firefoxMobileProfile.set_preference("general.useragent.override", self.mobileUA)
                 
-        self.firefoxMobileDriver = webdriver.Firefox(firefox_profile=firefoxMobileProfile, executable_path=self.driverBinary)
+        self.firefoxMobileDriver = webdriver.Firefox(firefox_profile=firefoxMobileProfile, executable_path=self.driverBinary, firefox_options=options)
         self.mobileRunning = True
         
     def getDesktopUrl(self, url):
