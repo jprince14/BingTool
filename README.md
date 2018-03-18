@@ -59,6 +59,14 @@ Instructions for running BingTool
 8) The tool can be set up to run automatically by the windows scheduler or cron. It can also be run in headless mode on a VPS such as AWS.
 
 
+Instructions for semi-automated setup up of BingTool on on Ubuntu Linux
+
+Run the following command
+	bash <(wget -qO- https://raw.githubusercontent.com/jprince14/BingTool/master/setupBing.sh)
+
+After executing the setupBing.sh script you need to log into the Ubuntu machine and sign into you Microsoft accouts for Firefox and/or Chrome.
+
+
 Tips
 
 For Windows the pip commands need to be run in an admin command prompt
