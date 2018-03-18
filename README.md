@@ -50,7 +50,7 @@ After executing the setupBing.sh script you need to log into the Ubuntu machine 
 		pip install beautifulsoup4
 		
 
-Instructions for running BingTool
+# Instructions for running BingTool
 
 1) Determine how many bing accounts you want to automate (1 or 2). Sign into the account(s), only use one Bing account per browser so if you have 2 accounts sign into one in firefox and another in chrome. As long as you dont clear your cookies in the browser you shouldn't need to repeat this step. BingTool does not require usernames or passwords, it relies on the browser having cookies which keep users logged in to their accounts.
 
