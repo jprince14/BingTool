@@ -156,20 +156,20 @@ class BingRewards(object):
             self.chromeObj.closeMobileDriver()
 
     def runDesktopSearches(self):
-        firefoxDesktopSearches = threading.Thread(name='ff_desktop', target=self.firefox_search, kwargs={'browser':BingRewards.DESKTOP})
+        firefoxDesktopSearches = threading.Thread(name='ff_desktop', target=self.firefox_search, kwargs={'browser': BingRewards.DESKTOP})
         firefoxDesktopSearches.start()
         
-        chromeDesktopSearches = threading.Thread(name='chrome_desktop', target=self.chrome_search, kwargs={'browser':BingRewards.DESKTOP})
+        chromeDesktopSearches = threading.Thread(name='chrome_desktop', target=self.chrome_search, kwargs={'browser': BingRewards.DESKTOP})
         chromeDesktopSearches.start()
 
         firefoxDesktopSearches.join()
         chromeDesktopSearches.join()
     
     def runMobileSearches(self):
-        firefoxMobileSearches = threading.Thread(name='ff_mobile', target=self.firefox_search, kwargs={'browser':BingRewards.MOBILE})
+        firefoxMobileSearches = threading.Thread(name='ff_mobile', target=self.firefox_search, kwargs={'browser': BingRewards.MOBILE})
         firefoxMobileSearches.start()
         
-        chromeMobileSearches = threading.Thread(name='chrome_mobile', target=self.chrome_search, kwargs={'browser':BingRewards.MOBILE})
+        chromeMobileSearches = threading.Thread(name='chrome_mobile', target=self.chrome_search, kwargs={'browser': BingRewards.MOBILE})
         chromeMobileSearches.start()
 
         firefoxMobileSearches.join()
@@ -203,12 +203,11 @@ def main():
         #Selenium especially can break if out of date
         print ("\n\npip contains out of date packages, it is recommended that you update pip before running again")
         print (outOfDatePackages)
-        
-    usefirefox = True
-    usechrome = True
-    DesktopSearches = 70
-    MobileSearches = 50
-    useHeadless = True
+    
+    if (args.firefox == False and args.chrome == False):
+        print("Error : Atleast one broswser must be selected. run \"%s --help\"" % sys.argv[0])
+        sys.exit(0)
+    
     bingRewards = BingRewards(desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches, 
                               UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless)
     print ("Init BingRewards Complete")
