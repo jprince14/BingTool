@@ -14,6 +14,10 @@ try:
     from Searches import Searches   
 except:
     checkDependencies()
+    #Try the imports again
+    from FirefoxWebDriver import FirefoxWebDriver
+    from ChromeWebDriver import ChromeWebDriver
+    from Searches import Searches   
 
 def getOutdatedPackages():
     list_command = pip.commands.list.ListCommand()
@@ -45,7 +49,7 @@ def updateDependencies(dependencies):
             print ("Unable to update %s\n" % dependency)
 
 def checkDependencies(packageList):
-    #Make sure that Selenium is installed
+    #Make sure that all dependencies are installed
     installed_packages = pip.get_installed_distributions()
     flat_installed_packages = [package.project_name for package in installed_packages]
     for packageName in packageList:
@@ -53,9 +57,7 @@ def checkDependencies(packageList):
             try:
                 pip.main(['install', '-U', packageName])
             except:
-                print ("NEED TO INSTALL \"%s\"" % packageName)
-                sys.stderr.write("ERROR: Need to install selenium")
-                print ("run the command \"pip install -U %s\"" % packageName)
+                sys.stderr.write("NEED TO INSTALL \"%s\"" % packageName)
                 sys.stderr.write("run the command \"pip install -U %s\"" % packageName)
     
     self.updateDependencies(packageList)

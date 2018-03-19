@@ -24,7 +24,7 @@ class ChromeWebDriver(object):
     linux64 = "linux64"
     linux32 = "linux32"
     
-    def __init__(self, desktopUA, mobileUA, useHeadless=False):
+    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         
@@ -153,7 +153,8 @@ class ChromeWebDriver(object):
         chrome_desktop_opts.set_headless(self.useHeadless)
         #prefs prevents gps popups
         prefs = {"profile.default_content_setting_values.geolocation" : 2}
-        chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
+        if self.desktopUA != None:
+            chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
         self.desktopRunning = True
@@ -162,7 +163,8 @@ class ChromeWebDriver(object):
         chrome_mobile_opts = Options()
         chrome_mobile_opts.add_argument('disable-infobars')
         chrome_mobile_opts.set_headless(self.useHeadless)
-        chrome_mobile_opts.add_argument("user-agent=" + self.mobileUA)
+        if self.mobileUA != None:
+            chrome_mobile_opts.add_argument("user-agent=" + self.mobileUA)
         chrome_mobile_opts.add_argument("user-data-dir=" + self.chromedirect)
         
         #prefs prevents gps popups
