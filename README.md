@@ -5,26 +5,18 @@
 BingTool supports automating bing rewards for two accounts at a time, the tools works by using the selenium browser automation platform. BingTool does not require any credentials, as long as you are logged into the browser that selenium launches then the searches will count towards bing rewards. BingTool emulates a mobile browser so users will get points for both desktop and mobile searches. Only firefox and chrome are supported, BingTool will run on Windows, macOS or Linux. BingTool can be run in the cloud and in non-gui enviroments using headless mode.
 
 BingTool automates the downloading of selenium webdrivers, they are stored in the Downloads directory and deleted after the script completes.
-
-# Known Issues
-
-1) Sometimes when firefox or chrome updates it takes selenium or webdrivers to start supporting the latest version. If the script starts crashing on one browser try running the following command:
-
-	Linux/mac : sudo pip install -U selenium
-	
-	Windows : python -m pip install -U selenium
 	
 # Instructions to set up BingTool
 
-## Semi-automated setup up of BingTool on on Ubuntu Linux
+## Semi-automated setup up of BingTool on on Linux
 
 Run the following command
 
 	bash <(wget -qO- https://raw.githubusercontent.com/jprince14/BingTool/master/setupBing.sh)
 
-After executing the setupBing.sh script you need to log into the Ubuntu machine and sign into you Microsoft accouts for Firefox and/or Chrome.
+After executing the setupBing.sh script you need to log into the linux computer and sign into you Microsoft accouts for Firefox and/or Chrome.
 
-## Manual Instructions for everything other than Ubuntu
+## Manual Instructions
 
 1) Download Python https://www.python.org/downloads/
 
@@ -83,9 +75,7 @@ After executing the setupBing.sh script you need to log into the Ubuntu machine 
 
 7) Run BingTool once a day to get maximum rewards. After running BingTool for the first time start at step 3 for all subsequent runs.
 
-8) The tool can be set up to run automatically by the windows scheduler or cron. It can also be run in headless mode on a VPS such as AWS.
-
-
+8) The tool can be set up to run automatically by the windows scheduler or cron. It can also be run in headless mode on remote linux servers including Amazon Web Services.
 
 
 # Tips
