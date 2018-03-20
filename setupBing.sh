@@ -17,10 +17,10 @@ eval $PKG_MGR update
 eval $PKG_MGR -y upgrade
 
 echo "Installing vim"
-eval $PKG_MGR install -y vim
+eval $PKG_MGR -y install vim
 
 echo "Installing firefox"
-eval $PKG_MGR install -y firefox
+eval $PKG_MGR -y install firefox
 
 #install chrome
 cd ~/Downloads
@@ -33,15 +33,15 @@ if [ "$system" = ubuntu ]; then
 	fi
 	eval $PKG_MGR update
 	echo "Installing chrome"
-	eval $PKG_MGR install -y google-chrome-stable
+	eval $PKG_MGR -y install google-chrome-stable
 	
 	echo "Installing a Desktop Enviroment"
-	eval $PKG_MGR install -y ubuntu-desktop
+	eval $PKG_MGR -y install ubuntu-desktop
 fi
 
 if [ "$system" = redhat ]; then
 	wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-	eval $PKG_MGR install -y redhat-lsb libXScrnSaver
+	eval $PKG_MGR -y install redhat-lsb libXScrnSaver
 	echo "Installing chrome"
 	eval $PKG_MGR localinstall google-chrome-stable_current_x86_64.rpm
 	
@@ -50,7 +50,7 @@ if [ "$system" = redhat ]; then
 fi
 
 echo "Installing pip"
-eval $PKG_MGR install -y python3-pip
+eval $PKG_MGR -y install python3-pip
 
 echo "Updating pip"
 sudo -H pip3 install --upgrade pip
@@ -61,7 +61,12 @@ sudo pip3 install selenium
 sudo pip3 install beautifulsoup4
 
 echo "installing git"
-eval $PKG_MGR install -y git
+eval $PKG_MGR -y install git
+
+DOT_GIT_DIR=~/.git/
+if [ ! -d $DOT_GIT_DIR ]; then
+	git init
+fi
 
 GIT_DIR=~/git/
 if [ ! -d $GIT_DIR ]; then
@@ -69,7 +74,9 @@ if [ ! -d $GIT_DIR ]; then
 fi
 
 cd $GIT_DIR
-if [ ! -d $GIT_DIR ]; then
+BING_DIR=$(pwd)/BingTool
+
+if [ ! -d $BING_DIR ]; then
   git clone https://github.com/jprince14/BingTool
 else
   git pull origin master
