@@ -10,9 +10,11 @@ BingTool automates the downloading of selenium webdrivers, they are stored in th
 
 ## Semi-automated setup up of BingTool on on Linux
 
-Run the following command
-
+Run one of the following commands
+	
 	bash <(wget -qO- https://raw.githubusercontent.com/jprince14/BingTool/master/setupBing.sh)
+	
+	bash <(curl -s https://raw.githubusercontent.com/jprince14/BingTool/master/setupBing.sh)
 
 After executing the setupBing.sh script you need to log into the linux computer and sign into you Microsoft accouts for Firefox and/or Chrome.
 
