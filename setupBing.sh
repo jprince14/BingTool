@@ -17,10 +17,10 @@ eval $PKG_MGR update
 eval $PKG_MGR -y upgrade
 
 echo "Installing vim"
-eval $PKG_MGR install vim
+eval $PKG_MGR install -y vim
 
 echo "Installing firefox"
-eval $PKG_MGR install firefox
+eval $PKG_MGR install -y firefox
 
 #install chrome
 cd ~/Downloads
