@@ -110,7 +110,7 @@ class BingRewards(object):
     
     def init_firefox(self, ):
         if self.UseFirefox == True:
-            self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless)
+            self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=True)
             if self.firefoxObj == None:
                 raise ("ERROR: firefoxObj = None")
     

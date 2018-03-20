@@ -1,6 +1,10 @@
 #!/bin/bash
 
 SAVED_DIR=$(pwd)
+USERNAME=$(whoami)
+
+cd ~
+HOMEDIR=$(pwd)
 
 if [ -f /etc/redhat-release ]; then
 	PKG_MGR="sudo yum"
@@ -23,7 +27,7 @@ echo "Installing firefox"
 eval $PKG_MGR -y install firefox
 
 #install chrome
-cd ~/Downloads
+eval 'cd "$HOMEDIR"/Downloads'
 
 if [ "$system" = ubuntu ]; then
 	if ! [ -f /etc/apt/sources.list.d/google.list ]; then
@@ -63,31 +67,29 @@ sudo pip3 install beautifulsoup4
 echo "installing git"
 eval $PKG_MGR -y install git
 
-DOT_GIT_DIR=~/.git/
+cd $HOMEDIR
+
+eval 'DOT_GIT_DIR="$HOMEDIR"/.git'
 if [ ! -d $DOT_GIT_DIR ]; then
-	git init
+	sudo -u $USERNAME git init
 fi
 
-GIT_DIR=~/git/
+eval 'GIT_DIR="$HOMEDIR"/git'
 if [ ! -d $GIT_DIR ]; then
-  mkdir -p $GIT_DIR;
+  sudo -u $USERNAME mkdir -p $GIT_DIR;
 fi
 
 cd $GIT_DIR
-BING_DIR=$(pwd)/BingTool
+eval 'BING_DIR="$GIT_DIR"/BingTool'
 
 if [ ! -d $BING_DIR ]; then
-  git clone https://github.com/jprince14/BingTool
+  sudo -u $USERNAME git clone https://github.com/jprince14/BingTool
 else
-  git pull origin master
+  cd $BING_DIR
+  sudo -u $USERNAME git pull origin master
 fi
 
-
-BING_DIR=$(pwd)/BingTool
-echo "BingTool is located at $(pwd)/BingTool"
-
-#Update the permissions of the git directory
-chmod -R 777 $BING_DIR
+echo "BingTool is located at $BING_DIR"
 
 cd $SAVED_DIR
 

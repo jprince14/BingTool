@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import platform
+import pickle
 import bs4 as BeautifulSoup
 import os
 import sys
@@ -11,7 +12,7 @@ import io
 
 class FirefoxWebDriver(object):
 
-    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False):
+    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         self.driverURL = "https://github.com/mozilla/geckodriver/releases/latest"
@@ -24,6 +25,8 @@ class FirefoxWebDriver(object):
         self.getWebdriverURL(self.driverURL)
         self.driverBinary = None
         self.useHeadless = useHeadless
+        self.loadCookies = loadCookies
+        self.cookies = None
         
         if platform.system() == "Windows":
             profilesDir = os.path.join(os.getenv('APPDATA') , "Mozilla", "Firefox", "Profiles")
@@ -57,6 +60,12 @@ class FirefoxWebDriver(object):
             if (file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz")) and (not file.endswith(".log")) and os.path.isfile(os.path.join(self.downloadsDir, file)):
                 self.driverBinary = os.path.join(self.downloadsDir, file)
                 os.chmod(self.driverBinary, 0o777)
+        
+        self.cookie_file = os.path.join(self.downloadsDir, "bing_cookies", "firefox_cookies.pkl")
+        if self.loadCookies == True:
+            if os.path.exists(self.cookie_file):
+                self.cookies = pickle.load(open(self.cookie_file, "rb"))
+                print("Loading Cookies")
     
     def getDefaultProfile(self, profileDir):
         for file in os.listdir(profileDir):
@@ -158,7 +167,11 @@ class FirefoxWebDriver(object):
 
         self.firefoxDesktopDriver = webdriver.Firefox(firefox_profile=firefoxDeskopProfile, executable_path=self.driverBinary, firefox_options=options)       
         self.desktopRunning = True
-    
+        if self.loadCookies == True and self.cookies != None:
+            self.getDesktopUrl("https://login.live.com")
+            for cookie in self.cookies:
+                self.firefoxDesktopDriver.add_cookie(cookie)
+            
     def startMobileDriver(self):    
         
         options = Options()
@@ -169,6 +182,10 @@ class FirefoxWebDriver(object):
                 
         self.firefoxMobileDriver = webdriver.Firefox(firefox_profile=firefoxMobileProfile, executable_path=self.driverBinary, firefox_options=options)
         self.mobileRunning = True
+        if self.loadCookies == True and self.cookies != None:
+            self.getMobileUrl("https://login.live.com")
+            for cookie in self.cookies:
+                self.firefoxMobileDriver.add_cookie(cookie)
         
     def getDesktopUrl(self, url):
         if self.desktopRunning == True:
