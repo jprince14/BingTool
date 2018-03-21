@@ -25,7 +25,7 @@ class ChromeWebDriver(object):
     linux64 = "linux64"
     linux32 = "linux32"
     
-    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False):
+    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, loadDefaultProfile=True):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         
@@ -39,6 +39,7 @@ class ChromeWebDriver(object):
         self.useHeadless = useHeadless
         self.loadCookies = loadCookies
         self.cookies = None
+        self.loadDefaultProfile = loadDefaultProfile
         
         self.DriverURLDict = {ChromeWebDriver.win: None, ChromeWebDriver.mac: None,
                               ChromeWebDriver.linux32 : None, ChromeWebDriver.linux64 : None}
@@ -164,7 +165,8 @@ class ChromeWebDriver(object):
         prefs = {"profile.default_content_setting_values.geolocation" : 2}
         if self.desktopUA != None:
             chrome_desktop_opts.add_argument("user-agent=" + self.desktopUA)
-        chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
+        if self.loadDefaultProfile == True:
+            chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
         self.desktopRunning = True
         if self.loadCookies == True and self.cookies != None:
@@ -178,7 +180,8 @@ class ChromeWebDriver(object):
         chrome_mobile_opts.set_headless(self.useHeadless)
         if self.mobileUA != None:
             chrome_mobile_opts.add_argument("user-agent=" + self.mobileUA)
-        chrome_mobile_opts.add_argument("user-data-dir=" + self.chromedirect)
+        if self.loadDefaultProfile == True:
+            chrome_mobile_opts.add_argument("user-data-dir=" + self.chromedirect)
         
         #prefs prevents gps popups
         prefs = {"profile.default_content_setting_values.geolocation" :2}

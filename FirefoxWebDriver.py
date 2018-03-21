@@ -12,7 +12,7 @@ import io
 
 class FirefoxWebDriver(object):
 
-    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False):
+    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, loadDefaultProfile=True):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         self.driverURL = "https://github.com/mozilla/geckodriver/releases/latest"
@@ -27,6 +27,7 @@ class FirefoxWebDriver(object):
         self.useHeadless = useHeadless
         self.loadCookies = loadCookies
         self.cookies = None
+        self.loadDefaultProfile = loadDefaultProfile
         
         if platform.system() == "Windows":
             profilesDir = os.path.join(os.getenv('APPDATA') , "Mozilla", "Firefox", "Profiles")
@@ -161,7 +162,10 @@ class FirefoxWebDriver(object):
         
         options = Options()
         options.set_headless(self.useHeadless)
-        firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
+        if self.loadDefaultProfile == True:
+            firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
+        else:
+            firefoxDeskopProfile = webdriver.FirefoxProfile()
         if self.desktopUA != None:
             firefoxDeskopProfile.set_preference("general.useragent.override", self.desktopUA)
 
@@ -176,7 +180,10 @@ class FirefoxWebDriver(object):
         
         options = Options()
         options.set_headless(self.useHeadless)
-        firefoxMobileProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
+        if self.loadDefaultProfile == True:
+            firefoxMobileProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
+        else:
+            firefoxMobileProfile = webdriver.FirefoxProfile()
         if self.mobileUA != None:
             firefoxMobileProfile.set_preference("general.useragent.override", self.mobileUA)
                 

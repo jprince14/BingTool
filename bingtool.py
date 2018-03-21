@@ -71,12 +71,13 @@ class BingRewards(object):
     MOBILE = "mobile"
     base_url = "https://www.bing.com/search?q="
     
-    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None, useHeadless=False):
+    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None, useHeadless=False, loadcookies=True):
         self.UseFirefox = UseFirefox
         self.UseChrome = UseChrome
         self.totalSearches = desktopSearches + mobileSearches
         self.numSearches = {BingRewards.DESKTOP : desktopSearches, BingRewards.MOBILE : mobileSearches}
         self.useHeadless = useHeadless
+        self.loadcookies = loadcookies
 
         if searchesList == None:
             searchesThread = threading.Thread(name='searches_init', target=self.init_searches)
@@ -104,13 +105,13 @@ class BingRewards(object):
         
     def init_chrome(self, ):
         if self.UseChrome == True:
-            self.chromeObj = ChromeWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless)
+            self.chromeObj = ChromeWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=self.loadcookies)
             if self.chromeObj == None:
                 raise ("ERROR: chromeObj = None")
     
     def init_firefox(self, ):
         if self.UseFirefox == True:
-            self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=True)
+            self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=self.loadcookies)
             if self.firefoxObj == None:
                 raise ("ERROR: firefoxObj = None")
     
@@ -191,7 +192,9 @@ def parseArgs():
     parser.add_argument('-c', '--chrome', dest='chrome', action='store_true', help='include this option to use chrome')
     parser.add_argument('-m', '--mobile', dest='mobile_searches', type=int, default=50, help='Number of Mobile Searches')
     parser.add_argument('-d', '--desktop', dest='desktop_searches', type=int, default=70, help='Number of Desktop Searches')
-    parser.add_argument('--cookies', dest='headless', action='store_true', help='include this option to load cookies that were set using the ')
+    parser.add_argument('--cookies', dest='cookies', action='store_true', 
+                        help='include this option to load cookies that were set using the microsoftLogin.py script.'\
+                            'the script was not used or no cookies were saved this will work as is this flag was not set')
     parser.add_argument('--headless', dest='headless', action='store_true', help='include this option to use headless mode')
     return parser.parse_args()
 
@@ -213,7 +216,7 @@ def main():
         sys.exit(0)
     
     bingRewards = BingRewards(desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches, 
-                              UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless)
+                              UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless, loadcookies=args.cookies)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
   

@@ -95,7 +95,7 @@ cd $SAVED_DIR
 
 #Add the script to the root chrontab
 echo "Adding BingTool as a daily scheduled cron job"
-croncmd="python3 $BING_DIR/bingtool.py -f -c --headless >/dev/null 2>&1"
+croncmd="python3 $BING_DIR/bingtool.py -f -c --headless --cookies >/dev/null 2>&1"
 minute=$(((1 + RANDOM % 60)-1))
 hour=$(((1 + RANDOM % 24)-1))
 fullcroncmd="$minute $hour * * * $croncmd"
