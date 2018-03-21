@@ -9,6 +9,7 @@ import io
 import stat
 import bs4 as BeautifulSoup
 import re
+import pickle
     
 class ChromeWebDriver(object):
     SUCCESS = 0
@@ -24,7 +25,7 @@ class ChromeWebDriver(object):
     linux64 = "linux64"
     linux32 = "linux32"
     
-    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False):
+    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         
@@ -36,7 +37,9 @@ class ChromeWebDriver(object):
         self.desktopRunning = False
         self.mobileRunning = False
         self.useHeadless = useHeadless
-
+        self.loadCookies = loadCookies
+        self.cookies = None
+        
         self.DriverURLDict = {ChromeWebDriver.win: None, ChromeWebDriver.mac: None,
                               ChromeWebDriver.linux32 : None, ChromeWebDriver.linux64 : None}
                 
@@ -70,6 +73,12 @@ class ChromeWebDriver(object):
                 os.chmod(self.webDriver, 0o777)
 
                 break
+        
+        self.cookie_file = os.path.join(self.downloadsDir, "bing_cookies", "chrome_cookies.pkl")
+        if self.loadCookies == True:
+            if os.path.exists(self.cookie_file):
+                self.cookies = pickle.load(open(self.cookie_file, "rb"))
+                print("Loading Cookies")
             
     def __del__(self):
         if self.desktopRunning == True:
@@ -158,6 +167,10 @@ class ChromeWebDriver(object):
         chrome_desktop_opts.add_argument("user-data-dir=" + self.chromedirect)
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_desktop_opts)
         self.desktopRunning = True
+        if self.loadCookies == True and self.cookies != None:
+            self.getDesktopUrl("https://login.live.com")
+            for cookie in self.cookies:
+                self.chromeDesktopDriver.add_cookie(cookie)
     
     def startMobileDriver(self):    
         chrome_mobile_opts = Options()
@@ -172,6 +185,11 @@ class ChromeWebDriver(object):
         chrome_mobile_opts.add_experimental_option("prefs",prefs)
         self.chromeMobileDriver = webdriver.Chrome(executable_path=self.webDriver,chrome_options=chrome_mobile_opts)
         self.mobileRunning = True
+        
+        if self.loadCookies == True and self.cookies != None:
+            self.getMobileUrl("https://login.live.com")
+            for cookie in self.cookies:
+                self.chromeMobileDriver.add_cookie(cookie)
         
     def getDesktopUrl(self, url):
         if self.desktopRunning == True:

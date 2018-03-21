@@ -29,18 +29,16 @@ After executing the setupBing.sh script you need to log into the linux computer 
 	Linux/mac:
 	
 		sudo pip install selenium
-		
+		sudo pip install setuptools 
 		sudo pip install feedparser
-		
 		sudo pip install beautifulsoup4
 		
 	
 	Windows (within an admin command prompt): 
 	
 		pip install selenium
-		
+		pip install setuptools
 		pip install feedparser
-		
 		pip install beautifulsoup4
 		
 
@@ -54,11 +52,11 @@ After executing the setupBing.sh script you need to log into the linux computer 
 
 4) Close all instances of the browser(s) that BingTool will be using
 
-5) Review available command line arguments by running "python main.py --help". For non-gui enviroments the headless mode will need to be selected
+5) Review available command line arguments by running "python bingtool.py --help". For non-gui enviroments the headless mode will need to be selected
 
 	```
 	
-	usage: main.py [-h] [-f] [-c] [-m MOBILE_SEARCHES] [-d DESKTOP_SEARCHES] [--headless]
+	usage: bingtool.py [-h] [-f] [-c] [-m MOBILE_SEARCHES] [-d DESKTOP_SEARCHES] [--headless]
 	
 	optional arguments:
 	  -h, --help            show this help message and exit
@@ -73,7 +71,7 @@ After executing the setupBing.sh script you need to log into the linux computer 
 
 	```
 
-6) Run the tool by running "python main.py OPTIONAL_ARGUMENTS"
+6) Run the tool by running "python bingtool.py OPTIONAL_ARGUMENTS"
 
 7) Run BingTool once a day to get maximum rewards. After running BingTool for the first time start at step 3 for all subsequent runs.
 
