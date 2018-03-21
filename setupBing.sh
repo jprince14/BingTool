@@ -108,5 +108,5 @@ full_update_time_cmd="* 0 * * * $update_time_cmd"
 
 sudo /etc/init.d/cron reload
 
-echo "User needs to either enable xrdp or set up vnc then sign into Microsoft account on browsers to use with BingTool"
+echo "User needs to sign into Microsoft account in Chrome and/or Firefox to use with BingTool. Either sign in using the GUI or use the microsoftLogin.py script"
 
