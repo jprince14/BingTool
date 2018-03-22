@@ -96,14 +96,14 @@ cd $SAVED_DIR
 #Add the script to the root chrontab
 echo "Adding BingTool as a daily scheduled cron job"
 croncmd="python3 $BING_DIR/bingtool.py -f -c --headless --cookies >/dev/null 2>&1"
-minute=$(((1 + RANDOM % 60)-1))
-hour=$(((1 + RANDOM % 24)-1))
+minute=$(shuf -i 0-59 -n 1)
+hour=$(shuf -i 0-23 -n 1)
 fullcroncmd="$minute $hour * * * $croncmd"
 ( sudo crontab -l | grep -v -F "$croncmd" ; echo "$fullcroncmd" ) | sudo crontab -
 
-update_time_cmd="$BING_DIR/update_bingrewards_run_time.sh >/dev/null 2>&1"
-#Update the time at midnight every day
-full_update_time_cmd="* 0 * * * $update_time_cmd"
+update_time_cmd="sh $BING_DIR/update_bingrewards_run_time.sh >/dev/null 2>&1"
+#Update the time to run the cron job at midnight and noon
+full_update_time_cmd="0 0,12 * * * $update_time_cmd"
 ( sudo crontab -l | grep -v -F "$update_time_cmd" ; echo "$full_update_time_cmd" ) | sudo crontab -
 
 sudo /etc/init.d/cron reload
