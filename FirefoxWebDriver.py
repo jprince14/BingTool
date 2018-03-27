@@ -12,7 +12,7 @@ import io
 
 class FirefoxWebDriver(object):
 
-    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, loadDefaultProfile=True):
+    def __init__(self, artifact_storage_dir, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, loadDefaultProfile=True):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         self.driverURL = "https://github.com/mozilla/geckodriver/releases/latest"
@@ -28,13 +28,11 @@ class FirefoxWebDriver(object):
         self.loadCookies = loadCookies
         self.cookies = None
         self.loadDefaultProfile = loadDefaultProfile
+        self.artifact_storage_dir = artifact_storage_dir
         
         if platform.system() == "Windows":
             profilesDir = os.path.join(os.getenv('APPDATA') , "Mozilla", "Firefox", "Profiles")
             self.getDefaultProfile(profilesDir)
-                        
-            self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
-                        
             self.checkIfGeckoDriverAlreadyExists()
             self.getGeckoDriver_zip(self.windowsURL)
             
@@ -42,27 +40,21 @@ class FirefoxWebDriver(object):
         #Mac
             profilesDir = os.path.join(os.environ['HOME'], "Library", "Application Support", "Firefox", "Profiles")
             self.getDefaultProfile(profilesDir)
-            
-            self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
-            
             self.checkIfGeckoDriverAlreadyExists()
             self.getGeckoDriver_tar_gz(self.macURL)
         
         elif platform.system() == "Linux":
             profilesDir = os.path.join(os.environ['HOME'], ".mozilla", "firefox")
             self.getDefaultProfile(profilesDir)
-            
-            self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
-            
             self.checkIfGeckoDriverAlreadyExists()
             self.getGeckoDriver_tar_gz(self.linuxURL)            
                         
-        for file in os.listdir(self.downloadsDir):
-            if (file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz")) and (not file.endswith(".log")) and os.path.isfile(os.path.join(self.downloadsDir, file)):
-                self.driverBinary = os.path.join(self.downloadsDir, file)
+        for file in os.listdir(self.artifact_storage_dir):
+            if (file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz")) and (not file.endswith(".log")) and os.path.isfile(os.path.join(self.artifact_storage_dir, file)):
+                self.driverBinary = os.path.join(self.artifact_storage_dir, file)
                 os.chmod(self.driverBinary, 0o777)
         
-        self.cookie_file = os.path.join(self.downloadsDir, "bing_cookies", "firefox_cookies.pkl")
+        self.cookie_file = os.path.join(self.artifact_storage_dir, "bing_cookies", "firefox_cookies.pkl")
         if self.loadCookies == True:
             if os.path.exists(self.cookie_file):
                 self.cookies = pickle.load(open(self.cookie_file, "rb"))
@@ -77,22 +69,22 @@ class FirefoxWebDriver(object):
         raise ("Unable to find default firefox profile directory")
 
     def checkIfGeckoDriverAlreadyExists(self):
-        for file in os.listdir(self.downloadsDir):
-            if (file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz")) and (not file.endswith(".log")) and os.path.isfile(os.path.join(self.downloadsDir, file)):
-                os.remove(os.path.join(self.downloadsDir, file))
+        for file in os.listdir(self.artifact_storage_dir):
+            if (file.startswith("geckodriver")) and (not file.endswith(".zip")) and (not file.endswith(".gz")) and (not file.endswith(".log")) and os.path.isfile(os.path.join(self.artifact_storage_dir, file)):
+                os.remove(os.path.join(self.artifact_storage_dir, file))
                 
     def getGeckoDriver_zip(self, URL):
         if sys.version_info.major <= 2:
             import urllib2
             zipDriver = urllib2.urlopen(URL).read()
             zip_ref = zipfile.ZipFile(io.BytesIO(zipDriver))
-            zip_ref.extractall(self.downloadsDir)
+            zip_ref.extractall(self.artifact_storage_dir)
             zip_ref.close() 
         elif sys.version_info.major >= 3:
             import urllib.request
             zipDriver = urllib.request.urlopen(URL).read()
             zip_ref = zipfile.ZipFile(io.BytesIO(zipDriver))
-            zip_ref.extractall(self.downloadsDir)
+            zip_ref.extractall(self.artifact_storage_dir)
             zip_ref.close()
     
     def getGeckoDriver_tar_gz(self, URL):
@@ -106,7 +98,7 @@ class FirefoxWebDriver(object):
     
         file_like_object = io.BytesIO(tar_gz_file)
         tar = tarfile.open(fileobj=file_like_object)
-        tar.extractall(path=self.downloadsDir)
+        tar.extractall(path=self.artifact_storage_dir)
         tar.close()
         
     def __del__(self):

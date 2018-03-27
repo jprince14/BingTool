@@ -5,6 +5,7 @@ import pip
 import threading
 import os
 import argparse
+import platform
 
 REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4", "setuptools"]
 
@@ -31,6 +32,10 @@ def getOutdatedPackages():
 
 def checkPip(packageList):
     outOfDatePackages = []
+    
+    #Upgrade pip
+    pip.main(['install', '--upgrade', 'pip'])
+    
     outdatedPackages = getOutdatedPackages()
     for packageName in packageList:
         if packageName in outdatedPackages:
@@ -71,13 +76,28 @@ class BingRewards(object):
     MOBILE = "mobile"
     base_url = "https://www.bing.com/search?q="
     
-    def __init__(self, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None, useHeadless=False, loadcookies=True):
+    def __init__(self, artifacts_dir, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None, useHeadless=False, loadcookies=True):
         self.UseFirefox = UseFirefox
         self.UseChrome = UseChrome
         self.totalSearches = desktopSearches + mobileSearches
         self.numSearches = {BingRewards.DESKTOP : desktopSearches, BingRewards.MOBILE : mobileSearches}
         self.useHeadless = useHeadless
         self.loadcookies = loadcookies
+
+        if platform.system() == "Windows":
+            downloads_dir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
+        elif platform.system() == "Darwin":
+            downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
+        elif platform.system() == "Linux":
+            downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
+
+        if artifacts_dir == None:
+            self.artifacts_dir = downloads_dir
+        else:
+            if os.path.exists(artifacts_dir):
+                self.artifacts_dir = artifacts_dir
+            else:
+                raise Exception("The location %s does not exist" % artifacts_dir)
 
         if searchesList == None:
             searchesThread = threading.Thread(name='searches_init', target=self.init_searches)
@@ -105,13 +125,13 @@ class BingRewards(object):
         
     def init_chrome(self, ):
         if self.UseChrome == True:
-            self.chromeObj = ChromeWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=self.loadcookies)
+            self.chromeObj = ChromeWebDriver(self.artifacts_dir, BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=self.loadcookies)
             if self.chromeObj == None:
                 raise ("ERROR: chromeObj = None")
     
     def init_firefox(self, ):
         if self.UseFirefox == True:
-            self.firefoxObj = FirefoxWebDriver(BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=self.loadcookies)
+            self.firefoxObj = FirefoxWebDriver(self.artifacts_dir, BingRewards.Edge,BingRewards.SafariMobile, self.useHeadless, loadCookies=self.loadcookies)
             if self.firefoxObj == None:
                 raise ("ERROR: firefoxObj = None")
     
@@ -196,11 +216,16 @@ def parseArgs():
                         help='include this option to load cookies that were set using the microsoftLogin.py script.'\
                             'the script was not used or no cookies were saved this will work as is this flag was not set')
     parser.add_argument('--headless', dest='headless', action='store_true', help='include this option to use headless mode')
+    parser.add_argument('-a', '--artifact', dest='artifact_dir', type=str, help='Directory to both store bing rewards artifacts and look for '
+                            "cookies created with the microsoftLogin.py script. If this option is not set the default value is the users "\
+                            "downloads directory")
     return parser.parse_args()
 
 
 def main():
     args = parseArgs()
+    
+
     
     #This allows the script to work with a windows scheduler
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -211,11 +236,11 @@ def main():
         print ("\n\npip contains out of date packages, it is recommended that you update pip before running again")
         print (outOfDatePackages)
     
-    if (args.firefox == False and args.chrome == False):
-        print("Error : Atleast one broswser must be selected. run \"%s --help\"" % sys.argv[0])
-        sys.exit(0)
+#     if (args.firefox == False and args.chrome == False):
+#         print("Error : At least one browser must be selected. run \"%s --help\"" % sys.argv[0])
+#         sys.exit(0)
     
-    bingRewards = BingRewards(desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches, 
+    bingRewards = BingRewards(args.artifact_dir, desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches, 
                               UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless, loadcookies=args.cookies)
     print ("Init BingRewards Complete")
     bingRewards.runDesktopSearches()

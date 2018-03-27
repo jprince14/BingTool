@@ -25,7 +25,7 @@ class ChromeWebDriver(object):
     linux64 = "linux64"
     linux32 = "linux32"
     
-    def __init__(self, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, loadDefaultProfile=True):
+    def __init__(self, artifact_storage_dir, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, loadDefaultProfile=True):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
         
@@ -41,13 +41,14 @@ class ChromeWebDriver(object):
         self.cookies = None
         self.loadDefaultProfile = loadDefaultProfile
         
+        self.artifact_storage_dir=artifact_storage_dir
+        
         self.DriverURLDict = {ChromeWebDriver.win: None, ChromeWebDriver.mac: None,
                               ChromeWebDriver.linux32 : None, ChromeWebDriver.linux64 : None}
                 
         if platform.system() == "Windows":
             self.controlKey = Keys.CONTROL
             self.chromedirect = os.path.join(os.getenv('LOCALAPPDATA'),"Google", "Chrome", "User Data")
-            self.downloadsDir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
             
             self.os = ChromeWebDriver.win
             
@@ -56,26 +57,24 @@ class ChromeWebDriver(object):
             self.controlKey = Keys.COMMAND
             self.chromedirect = os.path.join(os.getenv('HOME'),\
                 "Library", "Application Support", "Google", "Chrome", "Default")
-            self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
             self.os = ChromeWebDriver.mac
         
         elif platform.system() == "Linux":
             self.controlKey = Keys.COMMAND
             self.chromedirect = os.path.join(os.getenv('HOME'),\
                 ".config", "Google", "Chrome", "Default")
-            self.downloadsDir = os.path.join(os.getenv('HOME'),"Downloads")
             self.os = ChromeWebDriver.linux64
 
         self.getChromeDriver()
         
-        for file in os.listdir(self.downloadsDir):
+        for file in os.listdir(self.artifact_storage_dir):
             if ((file.startswith("chromedriver")) and (not file.endswith(".zip"))):
-                self.webDriver = os.path.join(self.downloadsDir,file)
+                self.webDriver = os.path.join(self.artifact_storage_dir,file)
                 os.chmod(self.webDriver, 0o777)
 
                 break
         
-        self.cookie_file = os.path.join(self.downloadsDir, "bing_cookies", "chrome_cookies.pkl")
+        self.cookie_file = os.path.join(self.artifact_storage_dir, "bing_cookies", "chrome_cookies.pkl")
         if self.loadCookies == True:
             if os.path.exists(self.cookie_file):
                 self.cookies = pickle.load(open(self.cookie_file, "rb"))
@@ -94,7 +93,7 @@ class ChromeWebDriver(object):
         print ("Chrome Cleanup Complete")
         
     def checkForChromeDriver(self):
-        for file in os.listdir(self.downloadsDir):
+        for file in os.listdir(self.artifact_storage_dir):
             if ((file.startswith("chromedriver")) and (not file.endswith(".zip"))):
                 return ChromeWebDriver.SUCCESS
         return ChromeWebDriver.FAILURE
@@ -142,18 +141,18 @@ class ChromeWebDriver(object):
             import urllib2
             zipDriver = urllib2.urlopen(self.DriverURLDict[self.os]).read()
             zip_ref = zipfile.ZipFile(io.BytesIO(zipDriver))
-            zip_ref.extractall(self.downloadsDir)
+            zip_ref.extractall(self.artifact_storage_dir)
             zip_ref.close() 
         elif sys.version_info.major >= 3:
             import urllib.request
             zipDriver = urllib.request.urlopen(self.DriverURLDict[self.os]).read()
             zip_ref = zipfile.ZipFile(io.BytesIO(zipDriver))
-            zip_ref.extractall(self.downloadsDir)
+            zip_ref.extractall(self.artifact_storage_dir)
             zip_ref.close() 
         
-        for file in os.listdir(self.downloadsDir):
+        for file in os.listdir(self.artifact_storage_dir):
             if ((file.startswith("chromedriver")) and (not file.endswith(".zip"))):
-                filePath = os.path.join(self.downloadsDir, file)
+                filePath = os.path.join(self.artifact_storage_dir, file)
                 st = os.stat(filePath)
                 os.chmod(filePath, st.st_mode | stat.S_IEXEC)
 

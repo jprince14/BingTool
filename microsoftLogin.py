@@ -60,6 +60,9 @@ def parseArgs():
     parser.add_argument('-f', '--firefox', dest='firefox', action='store_true', help='include this option to use firefox')
     parser.add_argument('-c', '--chrome', dest='chrome', action='store_true', help='include this option to use chrome')
     parser.add_argument('--headless', dest='headless', action='store_true', help='include this option to use headless mode')
+    parser.add_argument('-a', '--artifact', dest='artifact_dir', type=str, help='Directory to both store bing rewards artifacts and look for '
+                            "cookies created with the microsoftLogin.py script. If this option is not set the default value is the users "\
+                            "downloads directory")
     return parser.parse_args()
 
 def browser_login(wrapper_class, browserobj):
@@ -182,16 +185,34 @@ def browser_login(wrapper_class, browserobj):
 def main():
     args = parseArgs()
 
+
+
+        if platform.system() == "Windows":
+            downloads_dir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
+        elif platform.system() == "Darwin":
+            downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
+        elif platform.system() == "Linux":
+            downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
+
+        if args.artifact_dir == None:
+            artifacts_dir = downloads_dir
+        else:
+            if os.path.exists(args.artifact_dir):
+                artifacts_dir = args.artifact_dir
+            else:
+                raise Exception("The location %s does not exist" % args.artifact_dir)
+
+
     if args.firefox == True:    
 
-        browser_wrapper = FirefoxWebDriver(useHeadless=args.headless, loadDefaultProfile=True)
+        browser_wrapper = FirefoxWebDriver(artifacts_dir, useHeadless=args.headless, loadDefaultProfile=True)
         browser_wrapper.startDesktopDriver()  
         browser_obj = browser_wrapper.firefoxDesktopDriver
         print("Firefox Login")
         browser_login(browser_wrapper, browser_obj)
     
     if args.chrome == True:
-        browser_wrapper = ChromeWebDriver(useHeadless=args.headless)
+        browser_wrapper = ChromeWebDriver(artifacts_dir, useHeadless=args.headless)
         browser_wrapper.startDesktopDriver()  
         browser_obj = browser_wrapper.chromeDesktopDriver
         print("Chrome Login")

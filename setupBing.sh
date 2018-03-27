@@ -18,7 +18,7 @@ fi
 
 echo "Updating the system"
 eval $PKG_MGR update
-eval $PKG_MGR -y upgrade
+#eval $PKG_MGR -y upgrade
 
 echo "Installing vim"
 eval $PKG_MGR -y install vim
@@ -27,7 +27,7 @@ echo "Installing firefox"
 eval $PKG_MGR -y install firefox
 
 #install chrome
-eval 'cd "$HOMEDIR"/Downloads'
+cd $HOME/Downloads
 
 if [ "$system" = ubuntu ]; then
 	if ! [ -f /etc/apt/sources.list.d/google.list ]; then
@@ -67,20 +67,19 @@ sudo pip3 install beautifulsoup4
 echo "installing git"
 eval $PKG_MGR -y install git
 
-cd $HOMEDIR
 
-eval 'DOT_GIT_DIR="$HOMEDIR"/.git'
+DOT_GIT_DIR=$HOME/.git
 if [ ! -d $DOT_GIT_DIR ]; then
 	sudo -u $USERNAME git init
 fi
 
-eval 'GIT_DIR="$HOMEDIR"/git'
+GIT_DIR=$HOME/git
 if [ ! -d $GIT_DIR ]; then
   sudo -u $USERNAME mkdir -p $GIT_DIR;
 fi
 
 cd $GIT_DIR
-eval 'BING_DIR="$GIT_DIR"/BingTool'
+BING_DIR=$GIT_DIR/BingTool
 
 if [ ! -d $BING_DIR ]; then
   sudo -u $USERNAME git clone https://github.com/jprince14/BingTool
@@ -93,13 +92,29 @@ echo "BingTool is located at $BING_DIR"
 
 cd $SAVED_DIR
 
+
+#Use a LOCAL_ARTIFACT_DIR incase ARTIFACT_DIR is already in the bashrc
+LOCAL_ARTIFACT_DIR=$HOME/Downloads
+
+#Save ARTIFACT_DIR as an enviromental variable
+if grep -q ARTIFACT_DIR ~/.bashrc; then
+	grep -v -F ARTIFACT_DIR ~/.bashrc > ~/deleteme.tmp
+    echo "export ARTIFACT_DIR=$LOCAL_ARTIFACT_DIR" >> ~/deleteme.tmp
+    mv ~/deleteme.tmp ~/.bashrc
+    chmod 644 ~/.bashrc
+else
+	echo "export ARTIFACT_DIR=$LOCAL_ARTIFACT_DIR" >> ~/.bashrc
+fi
+source ~/.bashrc
+
+
 #Add the script to the root chrontab
 echo "Adding BingTool as a daily scheduled cron job"
-croncmd="python3 $BING_DIR/bingtool.py -f -c --headless --cookies >/dev/null 2>&1"
+croncmd="python3 $BING_DIR/bingtool.py -f -c --headless --cookies -a $LOCAL_ARTIFACT_DIR >/dev/null 2>&1"
 minute=$(shuf -i 0-59 -n 1)
 hour=$(shuf -i 0-23 -n 1)
 fullcroncmd="$minute $hour * * * $croncmd"
-( sudo crontab -l | grep -v -F "$croncmd" ; echo "$fullcroncmd" ) | sudo crontab -
+( sudo crontab -l | grep -v -F bingtool.py ; echo "$fullcroncmd" ) | sudo crontab -
 
 update_time_cmd="sh $BING_DIR/update_bingrewards_run_time.sh >/dev/null 2>&1"
 #Update the time to run the cron job at midnight and noon
