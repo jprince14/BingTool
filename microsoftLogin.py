@@ -185,22 +185,20 @@ def browser_login(wrapper_class, browserobj):
 def main():
     args = parseArgs()
 
+    if platform.system() == "Windows":
+        downloads_dir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
+    elif platform.system() == "Darwin":
+        downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
+    elif platform.system() == "Linux":
+        downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
 
-
-        if platform.system() == "Windows":
-            downloads_dir = os.path.join(os.getenv('HOMEPATH'),"Downloads")
-        elif platform.system() == "Darwin":
-            downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
-        elif platform.system() == "Linux":
-            downloads_dir = os.path.join(os.getenv('HOME'),"Downloads")
-
-        if args.artifact_dir == None:
-            artifacts_dir = downloads_dir
+    if args.artifact_dir == None:
+        artifacts_dir = downloads_dir
+    else:
+        if os.path.exists(args.artifact_dir):
+            artifacts_dir = args.artifact_dir
         else:
-            if os.path.exists(args.artifact_dir):
-                artifacts_dir = args.artifact_dir
-            else:
-                raise Exception("The location %s does not exist" % args.artifact_dir)
+            raise Exception("The location %s does not exist" % args.artifact_dir)
 
 
     if args.firefox == True:    
