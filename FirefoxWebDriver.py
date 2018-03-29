@@ -58,7 +58,7 @@ class FirefoxWebDriver(object):
         if self.loadCookies == True:
             if os.path.exists(self.cookie_file):
                 self.cookies = pickle.load(open(self.cookie_file, "rb"))
-                print("Loading Cookies")
+                print("Loading Cookies from %s in firefox" % self.cookie_file)
     
     def getDefaultProfile(self, profileDir):
         for file in os.listdir(profileDir):

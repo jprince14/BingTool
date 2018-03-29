@@ -1,4 +1,5 @@
 from FirefoxWebDriver import FirefoxWebDriver
+from ChromeWebDriver import ChromeWebDriver
 
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -112,9 +113,11 @@ def browser_login(wrapper_class, browserobj):
     
             print("Two Factor Authentication Page : %s" % title_elem.text)
            
+            #Print the available two factor devices
             for num in range(len(tables)):
                 print("%d : \"%s\"" % (num, tables[num].text))
                 
+            #Select the two factor device
             while True:
                 selection = input("Enter a selection : ")
      
@@ -134,7 +137,7 @@ def browser_login(wrapper_class, browserobj):
 
             page_description = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(PROOF_DESCRIPTION))
 
-            verification = input("%s :" % page_description.text)
+            verification = input("%s : " % page_description.text)
           
             WebDriverWait(browserobj, 10).until(EC.element_to_be_clickable(PROOF_BOX)).send_keys(verification)
           
@@ -148,14 +151,13 @@ def browser_login(wrapper_class, browserobj):
                 #The proof confirmation was correct
                 pass
             
-            
-        
+            #Enter the two factor one time code
             page_description = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(OTC_DESCRIPTION))
             print("%s" % page_description.text)
             
             title_elem = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(OTC_TITLE))
 
-            otc_code = input("%s :" % title_elem.text)
+            otc_code = input("%s : " % title_elem.text)
 
             WebDriverWait(browserobj, 10).until(EC.element_to_be_clickable(OTC_BOX)).send_keys(otc_code)
 
@@ -199,7 +201,6 @@ def main():
             artifacts_dir = args.artifact_dir
         else:
             raise Exception("The location %s does not exist" % args.artifact_dir)
-
 
     if args.firefox == True:    
 

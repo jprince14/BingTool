@@ -78,7 +78,7 @@ class ChromeWebDriver(object):
         if self.loadCookies == True:
             if os.path.exists(self.cookie_file):
                 self.cookies = pickle.load(open(self.cookie_file, "rb"))
-                print("Loading Cookies")
+                print("Loading Cookies from %s in chrome" % self.cookie_file)
             
     def __del__(self):
         if self.desktopRunning == True:
