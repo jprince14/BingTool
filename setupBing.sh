@@ -56,13 +56,18 @@ fi
 echo "Installing pip"
 eval $PKG_MGR -y install python3-pip
 
-echo "Updating pip"
+echo "Updating pip for both python 2 and python 3"
 sudo -H pip3 install --upgrade pip
+sudo -H pip install --upgrade pip
 echo "Installing python dependencies for Bing Tool"
-sudo pip3 install setuptools 
-sudo pip3 install feedparser
-sudo pip3 install selenium
-sudo pip3 install beautifulsoup4
+sudo pip3 install -U setuptools
+sudo pip install -U setuptools 
+sudo pip3 install -U feedparser
+sudo pip install -U feedparser
+sudo pip3 install -U selenium
+sudo pip install -U selenium
+sudo pip3 install -U beautifulsoup4
+sudo pip install -U beautifulsoup4
 
 echo "installing git"
 eval $PKG_MGR -y install git

@@ -6,6 +6,7 @@ import threading
 import os
 import argparse
 import platform
+from xml.sax import _exceptions
 
 REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4", "setuptools"]
 
@@ -40,7 +41,11 @@ def checkPip(packageList):
     for packageName in packageList:
         if packageName in outdatedPackages:
             print ("%s is outdated" % packageName)
-            result = pip.main(['install', '-U', packageName])
+            try:
+                result = pip.main(['install', '-U', packageName])
+            except:
+                print("Attempting to update package %s" % packageName)
+                result = -1
             if result != 0:
                 print ("package %s needs to be updated" % packageName)
                 outOfDatePackages.append(packageName)
@@ -225,8 +230,6 @@ def parseArgs():
 def main():
     args = parseArgs()
     
-
-    
     #This allows the script to work with a windows scheduler
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     
@@ -236,9 +239,9 @@ def main():
         print ("\n\npip contains out of date packages, it is recommended that you update pip before running again")
         print (outOfDatePackages)
     
-#     if (args.firefox == False and args.chrome == False):
-#         print("Error : At least one browser must be selected. run \"%s --help\"" % sys.argv[0])
-#         sys.exit(0)
+    if (args.firefox == False and args.chrome == False):
+        print("Error : At least one browser must be selected. run \"%s --help\"" % sys.argv[0])
+        sys.exit(0)
     
     bingRewards = BingRewards(args.artifact_dir, desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches, 
                               UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless, loadcookies=args.cookies)
