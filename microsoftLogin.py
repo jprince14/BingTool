@@ -11,7 +11,7 @@ import os
 import errno
 import argparse
 import sys
-from sys import settrace
+import platform
 
 from selenium.webdriver.common.action_chains import ActionChains
 
