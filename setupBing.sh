@@ -101,7 +101,7 @@ cd $SAVED_DIR
 #Use a LOCAL_ARTIFACT_DIR incase ARTIFACT_DIR is already in the bashrc
 LOCAL_ARTIFACT_DIR=$HOME/Downloads
 
-#Save ARTIFACT_DIR as an enviromental variable
+#Save ARTIFACT_DIR as an enviromental variable to the users .bashrc
 if grep -q ARTIFACT_DIR ~/.bashrc; then
 	grep -v -F ARTIFACT_DIR ~/.bashrc > ~/deleteme.tmp
     echo "export ARTIFACT_DIR=$LOCAL_ARTIFACT_DIR" >> ~/deleteme.tmp
@@ -111,6 +111,15 @@ else
 	echo "export ARTIFACT_DIR=$LOCAL_ARTIFACT_DIR" >> ~/.bashrc
 fi
 source ~/.bashrc
+
+#Update the root .bashrc
+if sudo grep -q ARTIFACT_DIR /root/.bashrc; then
+	sudo sh -c 'grep -v -F ARTIFACT_DIR /root/.bashrc > /root/deleteme.tmp'
+    sudo sh -c 'echo "export ARTIFACT_DIR='$LOCAL_ARTIFACT_DIR'" >> /root/deleteme.tmp'
+    sudo sh -c 'mv /root/deleteme.tmp /root/.bashrc'
+else
+	sudo sh -c 'echo "export ARTIFACT_DIR='$LOCAL_ARTIFACT_DIR'" >> /root/.bashrc'
+fi
 
 
 #Add the script to the root chrontab
