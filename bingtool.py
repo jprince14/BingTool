@@ -42,14 +42,19 @@ except:
     from Searches import Searches   
 
 def getOutdatedPackages():
-    list_command = pip.commands.list.ListCommand()
-    options, args = list_command.parse_args([])
-    packages = pip.utils.get_installed_distributions()
-    result = (list_command.get_outdated(packages, options))
-    outOfDatePackages = []
-    for stuff in result:
-        outOfDatePackages.append(str(stuff).split(" ")[0])
-    return outOfDatePackages
+    if sys.version_info[0] >= 3:
+        list_command = pip.commands.list.ListCommand()
+        options, args = list_command.parse_args([])
+        packages = pip.utils.get_installed_distributions()
+        result = (list_command.get_outdated(packages, options))
+        outOfDatePackages = []
+        for stuff in result:
+            outOfDatePackages.append(str(stuff).split(" ")[0])
+        return outOfDatePackages
+    else:
+        #With python 2 we are unable to find if packages are outdated
+        #so assume that all are
+        return REQUIRED_PACKAGES
 
 def checkPip(packageList):
     outOfDatePackages = []

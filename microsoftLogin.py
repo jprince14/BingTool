@@ -79,7 +79,7 @@ def browser_login(wrapper_class, browserobj):
             password_title = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(LOGIN_HEADER))
         except selenium.common.exceptions.TimeoutException:
             bad_user = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(BAD_USERNAME))
-            print("Error : \"%s\"" % bad_user.text)
+            print("Error : \"%s\"" % bad_user.text.encode('ascii', 'ignore'))
             sys.exit(1)
             
         # wait for password field and enter password
@@ -92,7 +92,7 @@ def browser_login(wrapper_class, browserobj):
         
         try:
             password_error = WebDriverWait(browserobj, 3).until(EC.visibility_of_element_located(BAD_PASSWORD))
-            print("Error : \"%s\"" % password_error.text)
+            print("Error : \"%s\"" % password_error.text.encode('ascii', 'ignore'))
             sys.exit(2)
         except selenium.common.exceptions.TimeoutException:
             #The password was correct
@@ -120,6 +120,7 @@ def browser_login(wrapper_class, browserobj):
             #Select the two factor device
             while True:
                 selection = input("Enter a selection : ")
+                selection = selection.encode('ascii','ignore')
      
                 if (selection.isdigit()) and (int(selection) in list(range(len(tables)))):
                     selection = int(selection)
@@ -135,9 +136,9 @@ def browser_login(wrapper_class, browserobj):
             title_elem = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(TWO_FACTOR_TITLE))
             print("%s" % title_elem.text)
 
-            page_description = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(PROOF_DESCRIPTION))
+            page_description = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(PROOF_DESCRIPTION))           
 
-            verification = input("%s : " % page_description.text)
+            verification = input("%s : " % page_description.text.encode('ascii', 'ignore'))
           
             WebDriverWait(browserobj, 10).until(EC.element_to_be_clickable(PROOF_BOX)).send_keys(verification)
           
@@ -145,7 +146,7 @@ def browser_login(wrapper_class, browserobj):
             
             try:
                 proof_error = WebDriverWait(browserobj, 3.0).until(EC.visibility_of_element_located(BAD_PROOF))
-                print("Error : \"%s\"" % proof_error.text)
+                print("Error : \"%s\"" % proof_error.text.encode('ascii', 'ignore'))
                 sys.exit(3)
             except selenium.common.exceptions.TimeoutException:
                 #The proof confirmation was correct
@@ -157,7 +158,7 @@ def browser_login(wrapper_class, browserobj):
             
             title_elem = WebDriverWait(browserobj, 10).until(EC.visibility_of_element_located(OTC_TITLE))
 
-            otc_code = input("%s : " % title_elem.text)
+            otc_code = input("%s : " % title_elem.text.encode('ascii', 'ignore'))
 
             WebDriverWait(browserobj, 10).until(EC.element_to_be_clickable(OTC_BOX)).send_keys(otc_code)
 
@@ -167,11 +168,20 @@ def browser_login(wrapper_class, browserobj):
 
             try:
                 otc_error = WebDriverWait(browserobj, 3).until(EC.visibility_of_element_located(OTC_ERROR))
-                print("Error : \"%s\"" % otc_error.text)
+                print("Error : \"%s\"" % otc_error.text.encode('ascii', 'ignore'))
                 sys.exit(4)
             except selenium.common.exceptions.TimeoutException:
                 #The proof confirmation was correct
                 pass
+                
+        browserobj.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+        DISPLAY_NAME = (By.ID, "displayName")
+        try:
+            title_elem = WebDriverWait(browserobj, 3).until(EC.visibility_of_element_located(DISPLAY_NAME))
+            print("\n\nLogged in as %s\n\n" % (title_elem.text.encode('ascii', 'ignore')))
+        except:
+            print("\n\nNot logged in didnt work\n")
+        
         
         if not os.path.exists(os.path.dirname(wrapper_class.cookie_file)):
             try:
@@ -181,7 +191,8 @@ def browser_login(wrapper_class, browserobj):
                     raise
         
         #Save the cookies
-        pickle.dump(browserobj.get_cookies() , open(wrapper_class.cookie_file,"wb"))          
+        pickle.dump(browserobj.get_cookies() , open(wrapper_class.cookie_file,"wb"))
+        print("Saving cookie to file %s" % wrapper_class.cookie_file)        
 
 
 def main():

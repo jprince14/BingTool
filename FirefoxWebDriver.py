@@ -170,7 +170,11 @@ class FirefoxWebDriver(object):
         if self.loadCookies == True and self.cookies != None:
             self.getDesktopUrl("https://login.live.com")
             for cookie in self.cookies:
-                self.firefoxDesktopDriver.add_cookie(cookie)
+                print("Adding cookie to Firefox Desktop Driver: %s" % str(cookie))
+                new_cookie={}
+                new_cookie['name']=cookie['name']
+                new_cookie['value']=cookie['value']
+                self.firefoxDesktopDriver.add_cookie(new_cookie)
         
         self.find_username()
                 
@@ -204,7 +208,11 @@ class FirefoxWebDriver(object):
         if self.loadCookies == True and self.cookies != None:
             self.getMobileUrl("https://login.live.com")
             for cookie in self.cookies:
-                self.firefoxMobileDriver.add_cookie(cookie)
+                print("Adding cookie to Firefox Mobile Driver: %s" % str(cookie))
+                new_cookie={}
+                new_cookie['name']=cookie['name']
+                new_cookie['value']=cookie['value']
+                self.firefoxMobileDriver.add_cookie(new_cookie)
         
     def getDesktopUrl(self, url):
         if self.desktopRunning == True:

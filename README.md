@@ -6,6 +6,8 @@ BingTool supports automating bing rewards for two accounts at a time, the tools 
 
 BingTool automates the downloading of selenium webdrivers, they are stored in the Downloads directory and deleted after the script completes.
 	
+BingTool can run in Python 2 or Python 3
+	
 # Instructions to set up BingTool
 
 ## Semi-automated setup up of BingTool on on Linux
@@ -20,26 +22,29 @@ After executing the setupBing.sh script you need to log into the linux computer 
 
 ## Manual Instructions
 
-1) Download Python https://www.python.org/downloads/
+1) Download Python https://www.python.org/downloads/ or install through a package manager in linux
 
-2) Download and Update pip. If pip is not installed on your system follow the instuctions at https://pip.pypa.io/en/stable/installing/	
+2) Download and Update pip. If pip is not installed on your system follow the instuctions at https://pip.pypa.io/en/stable/installing/. In linux just install python3-pip and/or python-pip your
+a package manager.
 	
 3) Install the prerequisite packages. Run the following commands:
 
+	For python 2 replace pip3 with pip
+
 	Linux/mac:
 	
-		sudo pip install selenium
-		sudo pip install setuptools 
-		sudo pip install feedparser
-		sudo pip install beautifulsoup4
+		sudo pip3 install selenium
+		sudo pip3 install setuptools 
+		sudo pip3 install feedparser
+		sudo pip3 install beautifulsoup4
 		
 	
 	Windows (within an admin command prompt): 
 	
-		pip install selenium
-		pip install setuptools
-		pip install feedparser
-		pip install beautifulsoup4
+		pip3 install selenium
+		pip3 install setuptools
+		pip3 install feedparser
+		pip3 install beautifulsoup4
 		
 
 # Instructions for running BingTool
