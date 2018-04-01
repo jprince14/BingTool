@@ -260,8 +260,8 @@ def parseArgs():
     parser.add_argument('--headless', dest='headless', action='store_true',
                         help='include this option to use headless mode')
     parser.add_argument('-a', '--artifact', dest='artifact_dir', type=str, help='Directory to both store bing rewards artifacts and look for '
-                        "cookies created with the microsoftLogin.py script. If this option is not set the default value is the users "
-                        "downloads directory. The artifacts stored are the downloaded webdriver binaries which get deleted at completion")
+                        "cookies created with the microsoftLogin.py script. If this option is not set the default value of None indicates to use"
+                        " the users downloads directory. The artifacts stored are the downloaded webdriver binaries which get deleted at completion")
     return parser.parse_args()
 
 

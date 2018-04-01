@@ -64,9 +64,9 @@ def parseArgs():
     parser.add_argument('-c', '--chrome', dest='chrome', action='store_true', help='include this option to use chrome')
     parser.add_argument('--headless', dest='headless', action='store_true',
                         help='include this option to use headless mode')
-    parser.add_argument('-a', '--artifact', dest='artifact_dir', type=str, help='Directory to both store bing rewards artifacts and look for '
-                        "cookies created with the microsoftLogin.py script. If this option is not set the default value is the users "
-                        "downloads directory")
+    parser.add_argument('-a', '--artifact', dest='artifact_dir', type=str, help="Directory to both store bing rewards artifacts and look for "
+                        "cookies created with the microsoftLogin.py script. If this option is not set the default value of None indicates to use "
+                        "the users downloads directory")
     return parser.parse_args()
 
 
@@ -218,7 +218,7 @@ def main():
     if args.firefox == True:
 
         browser_wrapper = FirefoxWebDriver(artifacts_dir, useHeadless=args.headless,
-                                           loadCookies=True, loadDefaultProfile=False)
+                                           loadCookies=True, load_default_profile=False)
         browser_wrapper.startDesktopDriver()
         browser_obj = browser_wrapper.firefoxDesktopDriver
         print("Firefox Login")
@@ -226,7 +226,7 @@ def main():
 
     if args.chrome == True:
         browser_wrapper = ChromeWebDriver(artifacts_dir, useHeadless=args.headless,
-                                          loadCookies=True, loadDefaultProfile=False)
+                                          loadCookies=True, load_default_profile=False)
         browser_wrapper.startDesktopDriver()
         browser_obj = browser_wrapper.chromeDesktopDriver
         print("Chrome Login")
