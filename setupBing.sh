@@ -55,6 +55,9 @@ fi
 
 echo "Installing pip"
 eval $PKG_MGR -y install python3-pip
+eval $PKG_MGR -y install python-pip
+
+
 
 echo "Updating pip for both python 2 and python 3"
 sudo -H pip3 install --upgrade pip

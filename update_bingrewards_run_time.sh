@@ -15,11 +15,17 @@ fi
 #Remove the current entry from the root crontab
 ( sudo crontab -l | grep -v -F bingtool.py ) | sudo crontab -
 
-minute=$(shuf -i 0-59 -n 1)
-hour=$(shuf -i 0-23 -n 1)
-fullcroncmd="$minute $hour * * * $croncmd"
-#update the root crontab
-( sudo crontab -l | grep -v -F bingtool.py ; echo "$fullcroncmd" ) | sudo crontab -
+minute1=$(shuf -i 0-59 -n 1)
+minute2=$(shuf -i 0-59 -n 1)
+hour1=$(shuf -i 0-11 -n 1)
+hour2=$(shuf -i 12-23 -n 1)
+fullcroncmd1="$minute1 $hour1 * * * $croncmd"
+fullcroncmd1="$minute2 $hour2 * * * $croncmd"
+
+#update the root crontab so the script is run twice a day
+( sudo crontab -l | echo "$fullcroncmd1" ) | sudo crontab -
+( sudo crontab -l | echo "$fullcroncmd2" ) | sudo crontab -
+
 
 sudo /etc/init.d/cron reload
 

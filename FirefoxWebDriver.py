@@ -1,6 +1,10 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+import selenium
 import platform
 import pickle
 import bs4 as BeautifulSoup
@@ -167,6 +171,22 @@ class FirefoxWebDriver(object):
             self.getDesktopUrl("https://login.live.com")
             for cookie in self.cookies:
                 self.firefoxDesktopDriver.add_cookie(cookie)
+        
+        self.find_username()
+                
+        
+    def find_username(self):
+        #This only needs to be run from the desktop browser
+        
+        self.firefoxDesktopDriver.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+        DISPLAY_NAME = (By.ID, "displayName")
+        try:
+            title_elem = WebDriverWait(self.firefoxDesktopDriver, 3).until(EC.visibility_of_element_located(DISPLAY_NAME))
+            print("\n\nLogged into firefox as %s\n\n" % (title_elem.text))
+        except:
+            print("\n\nNot logged in on firefox\n\n")
+        
+        
             
     def startMobileDriver(self):    
         

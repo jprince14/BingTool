@@ -1,6 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 import platform
 import os
 import sys
@@ -173,6 +176,22 @@ class ChromeWebDriver(object):
             for cookie in self.cookies:
                 self.chromeDesktopDriver.add_cookie(cookie)
     
+    
+        self.find_username()
+                
+        
+    def find_username(self):
+        #This only needs to be run from the desktop browser
+        
+        self.chromeDesktopDriver.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+        DISPLAY_NAME = (By.ID, "displayName")
+        try:
+            title_elem = WebDriverWait(self.chromeDesktopDriver, 3).until(EC.visibility_of_element_located(DISPLAY_NAME))
+            print("\n\nLogged into chrome as %s\n\n" % (title_elem.text))
+        except:
+            print("\n\nNot logged in on chrome\n\n")
+            
+            
     def startMobileDriver(self):    
         chrome_mobile_opts = Options()
         chrome_mobile_opts.add_argument('disable-infobars')

@@ -6,9 +6,29 @@ import threading
 import os
 import argparse
 import platform
-from xml.sax import _exceptions
 
 REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4", "setuptools"]
+
+def updateDependencies(dependencies):
+    for dependency in dependencies:
+        try:
+            pip.main(['install', '-U', dependency])
+        except:
+            print ("Unable to update %s\n" % dependency)
+
+def checkDependencies(packageList):
+    #Make sure that all dependencies are installed
+    installed_packages = pip.get_installed_distributions()
+    flat_installed_packages = [package.project_name for package in installed_packages]
+    for packageName in packageList:
+        if packageName not in flat_installed_packages:
+            try:
+                pip.main(['install', '-U', packageName])
+            except:
+                sys.stderr.write("NEED TO INSTALL \"%s\"" % packageName)
+                sys.stderr.write("run the command \"pip install -U %s\"" % packageName)
+    
+    self.updateDependencies(packageList)
 
 try:
     from FirefoxWebDriver import FirefoxWebDriver
@@ -50,27 +70,6 @@ def checkPip(packageList):
                 print ("package %s needs to be updated" % packageName)
                 outOfDatePackages.append(packageName)
     return outOfDatePackages
-
-def updateDependencies(dependencies):
-    for dependency in dependencies:
-        try:
-            pip.main(['install', '-U', dependency])
-        except:
-            print ("Unable to update %s\n" % dependency)
-
-def checkDependencies(packageList):
-    #Make sure that all dependencies are installed
-    installed_packages = pip.get_installed_distributions()
-    flat_installed_packages = [package.project_name for package in installed_packages]
-    for packageName in packageList:
-        if packageName not in flat_installed_packages:
-            try:
-                pip.main(['install', '-U', packageName])
-            except:
-                sys.stderr.write("NEED TO INSTALL \"%s\"" % packageName)
-                sys.stderr.write("run the command \"pip install -U %s\"" % packageName)
-    
-    self.updateDependencies(packageList)
 
 
 class BingRewards(object):
