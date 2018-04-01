@@ -28,7 +28,7 @@ def checkDependencies(packageList):
                 sys.stderr.write("NEED TO INSTALL \"%s\"" % packageName)
                 sys.stderr.write("run the command \"pip install -U %s\"" % packageName)
     
-    self.updateDependencies(packageList)
+    updateDependencies(packageList)
 
 try:
     from FirefoxWebDriver import FirefoxWebDriver
