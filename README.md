@@ -6,7 +6,7 @@ BingTool supports automating bing rewards for two accounts at a time, the tools 
 
 BingTool automates the downloading of selenium webdrivers, they are stored in the Downloads directory and deleted after the script completes.
 	
-BingTool can run in Python 2 or Python 3
+BingTool can run in Python 2 or Python 3. Python 3 is preferred
 	
 # Instructions to set up BingTool
 
