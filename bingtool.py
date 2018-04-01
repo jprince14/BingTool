@@ -35,7 +35,7 @@ try:
     from ChromeWebDriver import ChromeWebDriver
     from Searches import Searches   
 except:
-    checkDependencies()
+    checkDependencies(REQUIRED_PACKAGES)
     #Try the imports again
     from FirefoxWebDriver import FirefoxWebDriver
     from ChromeWebDriver import ChromeWebDriver
