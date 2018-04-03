@@ -174,6 +174,7 @@ class ChromeWebDriver(object):
         self.desktopRunning = True
         if self.loadCookies == True and self.cookies != None:
             self.getDesktopUrl("https://login.live.com")
+            self.chromeDesktopDriver.delete_all_cookies()
             for cookie in self.cookies:
                 # print("Adding cookie to Chrome Desktop Driver: %s" % str(cookie))
                 new_cookie = {}
@@ -213,6 +214,7 @@ class ChromeWebDriver(object):
 
         if self.loadCookies == True and self.cookies != None:
             self.getMobileUrl("https://login.live.com")
+            self.chromeMobileDriver.delete_all_cookies()
             for cookie in self.cookies:
                 # print("Adding cookie to Chrome Mobile Driver: %s" % str(cookie))
                 new_cookie = {}

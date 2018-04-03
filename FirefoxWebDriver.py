@@ -169,6 +169,7 @@ class FirefoxWebDriver(object):
             firefox_profile=firefoxDeskopProfile, executable_path=self.driverBinary, firefox_options=options)
         self.desktopRunning = True
         if self.loadCookies == True and self.cookies != None:
+            self.firefoxDesktopDriver.delete_all_cookies()
             self.getDesktopUrl("https://login.live.com")
             for cookie in self.cookies:
                 # print("Adding cookie to Firefox Desktop Driver: %s" % str(cookie))
@@ -207,6 +208,7 @@ class FirefoxWebDriver(object):
             firefox_profile=firefoxMobileProfile, executable_path=self.driverBinary, firefox_options=options)
         self.mobileRunning = True
         if self.loadCookies == True and self.cookies != None:
+            self.firefoxMobileDriver.delete_all_cookies()
             self.getMobileUrl("https://login.live.com")
             for cookie in self.cookies:
                 # print("Adding cookie to Firefox Mobile Driver: %s" % str(cookie))

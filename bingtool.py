@@ -92,6 +92,7 @@ class BingRewards(object):
 
     def __init__(self, artifacts_dir, desktopSearches, mobileSearches, UseFirefox, UseChrome, searchesList=None,
                  useHeadless=False, loadcookies=False, load_default_profile=True):
+        #If load_default_profile == False, loading cookies doesnt work
         self.UseFirefox = UseFirefox
         self.UseChrome = UseChrome
         self.totalSearches = desktopSearches + mobileSearches
@@ -250,9 +251,6 @@ def parseArgs():
 
     # Either load the default browser profile or load cookies saved from the microsoftLogin.py script"
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--loadprofile', dest='load_default_profile', action='store_true',
-                       help="Include this option to load the users default profile for the browsers chosen. This is the best "
-                       "method to use if you can log into your account through a GUI")
     group.add_argument('--cookies', dest='cookies', action='store_true',
                        help="include this option to load cookies that were set using the microsoftLogin.py script."
                        "the script was not used or no cookies were saved this will work as is this flag was not set. Use "
@@ -282,8 +280,7 @@ def main():
         sys.exit(0)
 
     bingRewards = BingRewards(args.artifact_dir, desktopSearches=args.desktop_searches, mobileSearches=args.mobile_searches,
-                              UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless, loadcookies=args.cookies,
-                              load_default_profile=args.load_default_profile)
+                              UseFirefox=args.firefox, UseChrome=args.chrome, useHeadless=args.headless, loadcookies=args.cookies)
     print("Init BingRewards Complete")
     bingRewards.runDesktopSearches()
 

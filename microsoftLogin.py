@@ -74,7 +74,7 @@ def browser_login(wrapper_class, browserobj):
     browserobj.get('https://login.live.com')
 
     # wait for email field and enter email
-    username = input("Enter Microsoft username:")
+    username = input("Enter Microsoft username : ")
     WebDriverWait(browserobj, 10).until(EC.element_to_be_clickable(EMAILFIELD)).send_keys(username)
     # Click Next
     WebDriverWait(browserobj, 10).until(EC.element_to_be_clickable(NEXTBUTTON)).click()
@@ -177,20 +177,21 @@ def browser_login(wrapper_class, browserobj):
             # The proof confirmation was correct
             pass
 
-    browserobj.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
-    DISPLAY_NAME = (By.ID, "displayName")
-    try:
-        title_elem = WebDriverWait(browserobj, 3).until(EC.visibility_of_element_located(DISPLAY_NAME))
-        print("\n\nLogged in as %s\n\n" % (str(title_elem.text.encode('ascii', 'ignore'))))
-    except:
-        print("\n\nNot logged in, something didnt work\n")
-
-    if not os.path.exists(os.path.dirname(wrapper_class.cookie_file)):
-        try:
-            os.makedirs(os.path.dirname(wrapper_class.cookie_file))
-        except OSError as exc:  # Guard against race condition
-            if exc.errno != errno.EEXIST:
-                raise
+# IMPORTANT - The Cookie doesnt save properly if we check if the login was successful
+#     browserobj.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+#     DISPLAY_NAME = (By.ID, "displayName")
+#     try:
+#         title_elem = WebDriverWait(browserobj, 5).until(EC.visibility_of_element_located(DISPLAY_NAME))
+#         print("\n\nLogged in as %s\n\n" % (str(title_elem.text.encode('ascii', 'ignore'))))
+#     except:
+#         print("\n\nNot logged in, something didnt work\n")
+#  
+#     if not os.path.exists(os.path.dirname(wrapper_class.cookie_file)):
+#         try:
+#             os.makedirs(os.path.dirname(wrapper_class.cookie_file))
+#         except OSError as exc:  # Guard against race condition
+#             if exc.errno != errno.EEXIST:
+#                 raise
 
     # Save the cookies
     pickle.dump(browserobj.get_cookies(), open(wrapper_class.cookie_file, "wb"))
@@ -218,7 +219,7 @@ def main():
     if args.firefox == True:
 
         browser_wrapper = FirefoxWebDriver(artifacts_dir, useHeadless=args.headless,
-                                           loadCookies=True, load_default_profile=False)
+                                           loadCookies=True, load_default_profile=True)
         browser_wrapper.startDesktopDriver()
         browser_obj = browser_wrapper.firefoxDesktopDriver
         print("Firefox Login")
@@ -226,7 +227,7 @@ def main():
 
     if args.chrome == True:
         browser_wrapper = ChromeWebDriver(artifacts_dir, useHeadless=args.headless,
-                                          loadCookies=True, load_default_profile=False)
+                                          loadCookies=True, load_default_profile=True)
         browser_wrapper.startDesktopDriver()
         browser_obj = browser_wrapper.chromeDesktopDriver
         print("Chrome Login")
