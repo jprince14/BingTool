@@ -250,8 +250,7 @@ def parseArgs():
                         default=70, help='Number of Desktop Searches')
 
     # Either load the default browser profile or load cookies saved from the microsoftLogin.py script"
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--cookies', dest='cookies', action='store_true',
+    parser.add_argument('--cookies', dest='cookies', action='store_true',
                        help="include this option to load cookies that were set using the microsoftLogin.py script."
                        "the script was not used or no cookies were saved this will work as is this flag was not set. Use "
                             "this option if the pc you are running bingtool on doesnt have a GUI")

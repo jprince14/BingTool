@@ -173,14 +173,19 @@ class ChromeWebDriver(object):
         self.chromeDesktopDriver = webdriver.Chrome(executable_path=self.webDriver, chrome_options=chrome_desktop_opts)
         self.desktopRunning = True
         if self.loadCookies == True and self.cookies != None:
+            # Loading cookies only works if we are at a site the cookie would work for
             self.getDesktopUrl("https://login.live.com")
             self.chromeDesktopDriver.delete_all_cookies()
             for cookie in self.cookies:
                 # print("Adding cookie to Chrome Desktop Driver: %s" % str(cookie))
-                new_cookie = {}
-                new_cookie['name'] = cookie['name']
-                new_cookie['value'] = cookie['value']
-                self.chromeDesktopDriver.add_cookie(new_cookie)
+                # new_cookie = {}
+                # new_cookie['name'] = cookie['name']
+                # new_cookie['value'] = cookie['value']
+                try:
+                    self.chromeDesktopDriver.add_cookie(cookie)
+                except selenium.common.exceptions.InvalidCookieDomainException:
+                    continue
+
 
         self.find_username()
 
@@ -213,14 +218,19 @@ class ChromeWebDriver(object):
         self.mobileRunning = True
 
         if self.loadCookies == True and self.cookies != None:
+            # Loading cookies only works if we are at a site the cookie would work for
             self.getMobileUrl("https://login.live.com")
             self.chromeMobileDriver.delete_all_cookies()
             for cookie in self.cookies:
                 # print("Adding cookie to Chrome Mobile Driver: %s" % str(cookie))
-                new_cookie = {}
-                new_cookie['name'] = cookie['name']
-                new_cookie['value'] = cookie['value']
-                self.chromeMobileDriver.add_cookie(new_cookie)
+                # new_cookie = {}
+                # new_cookie['name'] = cookie['name']
+                # new_cookie['value'] = cookie['value']
+                try:
+                    self.chromeMobileDriver.add_cookie(cookie)
+                except selenium.common.exceptions.InvalidCookieDomainException:
+                    continue
+
 
     def getDesktopUrl(self, url):
         if self.desktopRunning == True:

@@ -161,7 +161,7 @@ class FirefoxWebDriver(object):
         if self.loadDefaultProfile == True:
             firefoxDeskopProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         else:
-            firefoxDeskopProfile = webdriver.FirefoxProfile()
+            firefoxDeskopProfile = None
         if self.desktopUA != None:
             firefoxDeskopProfile.set_preference("general.useragent.override", self.desktopUA)
 
@@ -170,13 +170,17 @@ class FirefoxWebDriver(object):
         self.desktopRunning = True
         if self.loadCookies == True and self.cookies != None:
             self.firefoxDesktopDriver.delete_all_cookies()
+            # Loading cookies only works if we are at a site the cookie would work for
             self.getDesktopUrl("https://login.live.com")
             for cookie in self.cookies:
                 # print("Adding cookie to Firefox Desktop Driver: %s" % str(cookie))
-                new_cookie = {}
-                new_cookie['name'] = cookie['name']
-                new_cookie['value'] = cookie['value']
-                self.firefoxDesktopDriver.add_cookie(new_cookie)
+                # new_cookie = {}
+                # new_cookie['name'] = cookie['name']
+                # new_cookie['value'] = cookie['value']
+                try:
+                    self.firefoxDesktopDriver.add_cookie(cookie)
+                except selenium.common.exceptions.InvalidCookieDomainException:
+                    continue
 
         self.find_username()
 
@@ -200,7 +204,7 @@ class FirefoxWebDriver(object):
         if self.loadDefaultProfile == True:
             firefoxMobileProfile = webdriver.FirefoxProfile(profile_directory=self.ffProfileDir)
         else:
-            firefoxMobileProfile = webdriver.FirefoxProfile()
+            firefoxMobileProfile = None
         if self.mobileUA != None:
             firefoxMobileProfile.set_preference("general.useragent.override", self.mobileUA)
 
@@ -209,13 +213,18 @@ class FirefoxWebDriver(object):
         self.mobileRunning = True
         if self.loadCookies == True and self.cookies != None:
             self.firefoxMobileDriver.delete_all_cookies()
+            # Loading cookies only works if we are at a site the cookie would work for
             self.getMobileUrl("https://login.live.com")
             for cookie in self.cookies:
                 # print("Adding cookie to Firefox Mobile Driver: %s" % str(cookie))
-                new_cookie = {}
-                new_cookie['name'] = cookie['name']
-                new_cookie['value'] = cookie['value']
-                self.firefoxMobileDriver.add_cookie(new_cookie)
+                # new_cookie = {}
+                # new_cookie['name'] = cookie['name']
+                # new_cookie['value'] = cookie['value']
+                try:
+                    self.firefoxMobileDriver.add_cookie(cookie)
+                except selenium.common.exceptions.InvalidCookieDomainException:
+                    contine
+
 
     def getDesktopUrl(self, url):
         if self.desktopRunning == True:

@@ -13,6 +13,7 @@ import errno
 import argparse
 import sys
 import platform
+import shutil
 
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -64,6 +65,11 @@ def parseArgs():
     parser.add_argument('-c', '--chrome', dest='chrome', action='store_true', help='include this option to use chrome')
     parser.add_argument('--headless', dest='headless', action='store_true',
                         help='include this option to use headless mode')
+    parser.add_argument('--ignore_cookies', dest='ignore_cookies', action='store_false',
+                        help='include this option to avoid loading any cookies that exist in the artifact directory')
+    parser.add_argument('--ignore_profile', dest='ignore_profile', action='store_false',
+                        help='include this option to avoid loading the default browser profile. If this option is set '
+                            'loading cookies may not work')    
     parser.add_argument('-a', '--artifact', dest='artifact_dir', type=str, help="Directory to both store bing rewards artifacts and look for "
                         "cookies created with the microsoftLogin.py script. If this option is not set the default value of None indicates to use "
                         "the users downloads directory")
@@ -176,28 +182,29 @@ def browser_login(wrapper_class, browserobj):
         except selenium.common.exceptions.TimeoutException:
             # The proof confirmation was correct
             pass
+        
+    if not os.path.exists(os.path.dirname(wrapper_class.cookie_file)):
+        try:
+            os.makedirs(os.path.dirname(wrapper_class.cookie_file))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+    pickle.dump(browserobj.get_cookies(), open(wrapper_class.cookie_file + ".tmp", "wb"))
 
 # IMPORTANT - The Cookie doesnt save properly if we check if the login was successful
-#     browserobj.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
-#     DISPLAY_NAME = (By.ID, "displayName")
-#     try:
-#         title_elem = WebDriverWait(browserobj, 5).until(EC.visibility_of_element_located(DISPLAY_NAME))
-#         print("\n\nLogged in as %s\n\n" % (str(title_elem.text.encode('ascii', 'ignore'))))
-#     except:
-#         print("\n\nNot logged in, something didnt work\n")
-#  
-#     if not os.path.exists(os.path.dirname(wrapper_class.cookie_file)):
-#         try:
-#             os.makedirs(os.path.dirname(wrapper_class.cookie_file))
-#         except OSError as exc:  # Guard against race condition
-#             if exc.errno != errno.EEXIST:
-#                 raise
+    browserobj.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+    DISPLAY_NAME = (By.ID, "displayName")
+    try:
+        title_elem = WebDriverWait(browserobj, 5).until(EC.visibility_of_element_located(DISPLAY_NAME))
+        print("\n\nLogged in as %s\n\n" % (str(title_elem.text.encode('ascii', 'ignore'))))
+        shutil.move(wrapper_class.cookie_file + ".tmp", wrapper_class.cookie_file)
+        print("Saving cookie to file %s" % wrapper_class.cookie_file)
 
-    # Save the cookies
-    pickle.dump(browserobj.get_cookies(), open(wrapper_class.cookie_file, "wb"))
-    print("Saving cookie to file %s" % wrapper_class.cookie_file)
-
-
+    except:
+        print("TODO : Need other tests to see if we logged in successfully")
+        os.remove(wrapper_class.cookie_file + ".tmp")
+        print("\n\nNot logged in, something didnt work\n")
+  
 def main():
     args = parseArgs()
 
@@ -219,7 +226,7 @@ def main():
     if args.firefox == True:
 
         browser_wrapper = FirefoxWebDriver(artifacts_dir, useHeadless=args.headless,
-                                           loadCookies=True, load_default_profile=True)
+                                           loadCookies=args.ignore_cookies, load_default_profile=args.ignore_profile)
         browser_wrapper.startDesktopDriver()
         browser_obj = browser_wrapper.firefoxDesktopDriver
         print("Firefox Login")
@@ -227,7 +234,7 @@ def main():
 
     if args.chrome == True:
         browser_wrapper = ChromeWebDriver(artifacts_dir, useHeadless=args.headless,
-                                          loadCookies=True, load_default_profile=True)
+                                          loadCookies=args.ignore_cookies, load_default_profile=args.ignore_profile)
         browser_wrapper.startDesktopDriver()
         browser_obj = browser_wrapper.chromeDesktopDriver
         print("Chrome Login")
