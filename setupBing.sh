@@ -128,10 +128,14 @@ fi
 #Add the script to the root chrontab
 echo "Adding BingTool as a daily scheduled cron job"
 croncmd="python3 $BING_DIR/bingtool.py -f -c --headless --cookies -a $LOCAL_ARTIFACT_DIR >/dev/null 2>&1"
-minute=$(shuf -i 0-59 -n 1)
-hour=$(shuf -i 0-23 -n 1)
-fullcroncmd="$minute $hour * * * $croncmd"
-( sudo crontab -l | grep -v -F bingtool.py ; echo "$fullcroncmd" ) | sudo crontab -
+minute1=$(shuf -i 0-59 -n 1)
+minute2=$(shuf -i 0-59 -n 1)
+hour1=$(shuf -i 0-11 -n 1)
+hour2=$(shuf -i 12-23 -n 1)
+fullcroncmd1="$minute1 $hour1 * * * $croncmd"
+fullcroncmd2="$minute2 $hour2 * * * $croncmd"
+#update the root crontab so the script is run twice a day
+( sudo crontab -l | grep -v -F bingtool.py ; echo "$fullcroncmd1\n$fullcroncmd2" ) | sudo crontab -
 
 update_time_cmd="sh $BING_DIR/update_bingrewards_run_time.sh >/dev/null 2>&1"
 #Update the time to run the cron job at midnight and noon
