@@ -32,7 +32,7 @@ class ChromeWebDriver(object):
     def __init__(self, artifact_storage_dir, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, load_default_profile=True):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
-
+        self.logged_in = False
         self.winDriver = None
         self.macDriver = None
         self.linux64Driver = None
@@ -163,6 +163,7 @@ class ChromeWebDriver(object):
     def startDesktopDriver(self):
         chrome_desktop_opts = Options()
         chrome_desktop_opts.add_argument('disable-infobars')
+        chrome_desktop_opts.add_argument('disable-search-geolocation-disclosure')
         chrome_desktop_opts.set_headless(self.useHeadless)
         # prefs prevents gps popups
         prefs = {"profile.default_content_setting_values.geolocation": 2}
@@ -187,36 +188,39 @@ class ChromeWebDriver(object):
                     continue
 
 
-        self.find_username()
+        self.logged_in = self.check_if_logged_in()
 
-    def find_username(self):
-        # This only needs to be run from the desktop browser
-
-        self.chromeDesktopDriver.get(
-            "https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+    def check_if_logged_in(self):
         DISPLAY_NAME = (By.ID, "displayName")
+        ID_ALIAS = (By.ID, "idAliasHeadingText")
+        self.chromeDesktopDriver.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+    
         try:
-            title_elem = WebDriverWait(self.chromeDesktopDriver, 3).until(
-                EC.visibility_of_element_located(DISPLAY_NAME))
-            print("\n\nLogged into chrome as %s\n\n" % (title_elem.text))
+            title_elem = WebDriverWait(self.chromeDesktopDriver, 5).until(EC.visibility_of_element_located(DISPLAY_NAME))
+            print("Logged in as %s" % (title_elem.text))
+            self.logged_in = True
         except:
-            print("\n\nNot logged in on chrome\n\n")
+            try:
+                WebDriverWait(self.chromeDesktopDriver, 5).until(EC.visibility_of_element_located(ID_ALIAS))
+                print("Logged in but unable to confirm the user name")
+                self.logged_in = True
+            except:        
+                print("Not logged in")
+                self.logged_in = False
 
     def startMobileDriver(self):
         chrome_mobile_opts = Options()
         chrome_mobile_opts.add_argument('disable-infobars')
+        chrome_mobile_opts.add_argument('disable-search-geolocation-disclosure')
         chrome_mobile_opts.set_headless(self.useHeadless)
         if self.mobileUA != None:
             chrome_mobile_opts.add_argument("user-agent=" + self.mobileUA)
         if self.loadDefaultProfile == True:
             chrome_mobile_opts.add_argument("user-data-dir=" + self.chromedirect)
 
-        # prefs prevents gps popups
-        prefs = {"profile.default_content_setting_values.geolocation": 2}
-        chrome_mobile_opts.add_experimental_option("prefs", prefs)
         self.chromeMobileDriver = webdriver.Chrome(executable_path=self.webDriver, chrome_options=chrome_mobile_opts)
         self.mobileRunning = True
-
+        
         if self.loadCookies == True and self.cookies != None:
             # Loading cookies only works if we are at a site the cookie would work for
             self.getMobileUrl("https://login.live.com")
@@ -247,6 +251,13 @@ class ChromeWebDriver(object):
             self.chromeMobileDriver.get(url)
         else:
             print("Chrome mobile webdriver is not open")
+        
+        try:
+            #Close out any alerts that appear
+            WebDriverWait(self.chromeMobileDriver, 1).until(ExpectedConditions.alertIsPresent())
+            self.chromeMobileDriver.SwitchTo().alert().dismiss()
+        except:
+            pass
 
     def closeDesktopDriver(self):
         if self.desktopRunning == True:

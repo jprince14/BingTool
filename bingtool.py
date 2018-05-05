@@ -1,11 +1,11 @@
 import random
 from time import sleep
 import sys
-import pip
 import threading
 import os
 import argparse
 import platform
+import subprocess
 
 REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4", "setuptools"]
 
@@ -13,7 +13,7 @@ REQUIRED_PACKAGES = ["selenium", "feedparser", "beautifulsoup4", "setuptools"]
 def updateDependencies(dependencies):
     for dependency in dependencies:
         try:
-            pip.main(['install', '-U', dependency])
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', dependency])
         except:
             print("Unable to update %s\n" % dependency)
 
@@ -25,7 +25,7 @@ def checkDependencies(packageList):
     for packageName in packageList:
         if packageName not in flat_installed_packages:
             try:
-                pip.main(['install', '-U', packageName])
+                subprocess.check_call([sys.executable, '-m', 'pip', 'install', packageName])
             except:
                 sys.stderr.write("NEED TO INSTALL \"%s\"" % packageName)
                 sys.stderr.write("run the command \"pip install -U %s\"" % packageName)
@@ -43,43 +43,6 @@ except:
     from FirefoxWebDriver import FirefoxWebDriver
     from ChromeWebDriver import ChromeWebDriver
     from Searches import Searches
-
-
-def getOutdatedPackages():
-    if sys.version_info[0] >= 3:
-        list_command = pip.commands.list.ListCommand()
-        options, args = list_command.parse_args([])
-        packages = pip.utils.get_installed_distributions()
-        result = (list_command.get_outdated(packages, options))
-        outOfDatePackages = []
-        for stuff in result:
-            outOfDatePackages.append(str(stuff).split(" ")[0])
-        return outOfDatePackages
-    else:
-        # With python 2 we are unable to find if packages are outdated
-        # so assume that all are
-        return REQUIRED_PACKAGES
-
-
-def checkPip(packageList):
-    outOfDatePackages = []
-
-    # Upgrade pip
-    pip.main(['install', '--upgrade', 'pip'])
-
-    outdatedPackages = getOutdatedPackages()
-    for packageName in packageList:
-        if packageName in outdatedPackages:
-            print("%s is outdated" % packageName)
-            try:
-                result = pip.main(['install', '-U', packageName])
-            except:
-                print("Attempting to update package %s" % packageName)
-                result = -1
-            if result != 0:
-                print("package %s needs to be updated" % packageName)
-                outOfDatePackages.append(packageName)
-    return outOfDatePackages
 
 
 class BingRewards(object):
@@ -233,7 +196,7 @@ class BingRewards(object):
 
 def testChromeMobileGPSCrash():
     searchList = ["find my location", "near me", "weather"]
-    bingRewards = BingRewards(desktopSearches=0, mobileSearches=3, UseFirefox=False,
+    bingRewards = BingRewards(None, desktopSearches=0, mobileSearches=3, UseFirefox=False,
                               UseChrome=True, searchesList=searchList)
     bingRewards.runMobileSearches()
     sleep(5)
@@ -259,6 +222,8 @@ def parseArgs():
     parser.add_argument('-a', '--artifact', dest='artifact_dir', type=str, help='Directory to both store bing rewards artifacts and look for '
                         "cookies created with the microsoftLogin.py script. If this option is not set the default value of None indicates to use"
                         " the users downloads directory. The artifacts stored are the downloaded webdriver binaries which get deleted at completion")
+    parser.add_argument('-cl', '--chrome_location', dest='chrome_location', action='store_true', 
+                        help='Check if the chrome mobile webdriver blocks prompts for allowing location. If this option is selected nothing else runs')
     return parser.parse_args()
 
 
@@ -268,13 +233,12 @@ def main():
     # This allows the script to work with a windows scheduler
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    outOfDatePackages = checkPip(REQUIRED_PACKAGES)
-    if len(outOfDatePackages) != 0:
-        # Selenium especially can break if out of date
-        print("\n\npip contains out of date packages, it is recommended that you update pip before running again")
-        print(outOfDatePackages)
-
-    if (args.firefox == False and args.chrome == False):
+    if args.chrome_location is True:
+        testChromeMobileGPSCrash()
+        print("Chrome mobile location test complete, exiting")
+        return
+    
+    if (args.firefox is False) and (args.chrome is False):
         print("Error : At least one browser must be selected. run \"%s --help\"" % sys.argv[0])
         sys.exit(0)
 

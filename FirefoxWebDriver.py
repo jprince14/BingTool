@@ -20,6 +20,7 @@ class FirefoxWebDriver(object):
     def __init__(self, artifact_storage_dir, desktopUA=None, mobileUA=None, useHeadless=False, loadCookies=False, load_default_profile=True):
         self.desktopUA = desktopUA
         self.mobileUA = mobileUA
+        self.logged_in = False
         self.driverURL = "https://github.com/mozilla/geckodriver/releases/latest"
         self.githubUrl = "https://github.com"
         self.mobileRunning = False
@@ -174,28 +175,34 @@ class FirefoxWebDriver(object):
             self.getDesktopUrl("https://login.live.com")
             for cookie in self.cookies:
                 # print("Adding cookie to Firefox Desktop Driver: %s" % str(cookie))
-                # new_cookie = {}
-                # new_cookie['name'] = cookie['name']
-                # new_cookie['value'] = cookie['value']
+                new_cookie = {}
+                new_cookie['name'] = cookie['name']
+                new_cookie['value'] = cookie['value']
                 try:
-                    self.firefoxDesktopDriver.add_cookie(cookie)
+                    self.firefoxDesktopDriver.add_cookie(new_cookie)
                 except selenium.common.exceptions.InvalidCookieDomainException:
                     continue
 
-        self.find_username()
+        self.check_if_logged_in()
 
-    def find_username(self):
-        # This only needs to be run from the desktop browser
-
-        self.firefoxDesktopDriver.get(
-            "https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+    def check_if_logged_in(self):
+        
         DISPLAY_NAME = (By.ID, "displayName")
+        ID_ALIAS = (By.ID, "idAliasHeadingText")
+        self.firefoxDesktopDriver.get("https://account.live.com/names/Manage?mkt=en-US&refd=account.microsoft.com&refp=profile")
+    
         try:
-            title_elem = WebDriverWait(self.firefoxDesktopDriver, 3).until(
-                EC.visibility_of_element_located(DISPLAY_NAME))
-            print("\n\nLogged into firefox as %s\n\n" % (title_elem.text))
+            title_elem = WebDriverWait(self.firefoxDesktopDriver, 5).until(EC.visibility_of_element_located(DISPLAY_NAME))
+            print("Logged in as %s" % (title_elem.text))
+            self.logged_in = True
         except:
-            print("\n\nNot logged in on firefox\n\n")
+            try:
+                WebDriverWait(self.firefoxDesktopDriver, 5).until(EC.visibility_of_element_located(ID_ALIAS))
+                print("Logged in but unable to confirm the user name")
+                self.logged_in = True
+            except:        
+                print("Not logged in")
+                self.logged_in = False
 
     def startMobileDriver(self):
 
