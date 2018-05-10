@@ -196,7 +196,7 @@ class BingRewards(object):
 
 def testChromeMobileGPSCrash():
     searchList = ["find my location", "near me", "weather"]
-    bingRewards = BingRewards(None, desktopSearches=0, mobileSearches=3, UseFirefox=False,
+    bingRewards = BingRewards(None, desktopSearches=0, mobileSearches=len(searchList), UseFirefox=False,
                               UseChrome=True, searchesList=searchList)
     bingRewards.runMobileSearches()
     sleep(5)

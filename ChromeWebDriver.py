@@ -248,17 +248,16 @@ class ChromeWebDriver(object):
         if self.mobileRunning == True:
             if not url.startswith("http"):
                 url = "http://" + url
-            self.chromeMobileDriver.get(url)
+            try:
+                self.chromeMobileDriver.get(url)
+
+            except:
+                # This closes any alert windows (such as ones asking for location)
+                alert = self.chromeMobileDriver.switch_to_alert()
+                alert.dismiss()
         else:
             print("Chrome mobile webdriver is not open")
         
-        try:
-            #Close out any alerts that appear
-            WebDriverWait(self.chromeMobileDriver, 1).until(ExpectedConditions.alertIsPresent())
-            self.chromeMobileDriver.SwitchTo().alert().dismiss()
-        except:
-            pass
-
     def closeDesktopDriver(self):
         if self.desktopRunning == True:
             try:
