@@ -138,10 +138,7 @@ class FirefoxWebDriver(object):
 #         if downloadsSection == None:
 #             downloadsSection= soup.find('ul', {"class": "Latest release"})
 #         driverList = downloadsSection.findAll("a")
-
-        assets = soup.find('h2')
-        ul = assets.find_next('ul')
-        driverList = ul.findAll("a")
+        driverList = soup.findAll("a")
 
         for driver in driverList:
             driverUrl = driver['href']
